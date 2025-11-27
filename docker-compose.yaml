@@ -1,0 +1,40 @@
+services:
+  # To start a development container with Podman or Docker, run:
+  # podman-compose run --rm dev
+  # <or>
+  # docker-compose run --rm dev
+  # This will drop you into a shell inside the container with all necessary tools installed.
+  # On exit, the container will be removed.
+  dev:
+    image: alpine:3.22
+    command: >
+      sh -c '
+        apk add --no-cache \
+          bash \
+          clang \
+          lldb \
+          py3-lldb \
+          xmake
+        echo -e ""
+
+        echo -e "Use \033[1;32mClang\033[0m as the default toolchain."
+        xmake f --toolchain=clang -c -q
+        echo -e "Use \033[1;32mLLDB\033[0m as the default debugger."
+        xmake f --debugger=lldb -c -q
+        echo -e "Set \033[1;32mDebug\033[0m build mode as default."
+        xmake f -m debug -q
+
+        echo -e ""
+        echo -e "Build (Release):\033[1;32m xmake -m release \033[0m"
+        echo -e "Build (Debug):  \033[1;32m xmake -m debug   \033[0m"
+        echo -e "Run:            \033[1;32m xmake run        \033[0m"
+        echo -e "Debug:          \033[1;32m xmake run -d     \033[0m"
+        echo -e ""
+
+        bash
+      '
+    volumes:
+      - .:/workspace:z
+    working_dir: /workspace
+    environment:
+      - XMAKE_ROOT=y
