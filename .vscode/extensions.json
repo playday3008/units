@@ -1,5 +1,10 @@
 {
     "recommendations": [
-        "tboox.xmake-vscode"
+        "ms-vscode.cpptools-extension-pack",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "tboox.xmake-vscode",
+        "sumneko.lua",
+        "davidanson.vscode-markdownlint",
+        "redhat.vscode-yaml"
     ]
 }
