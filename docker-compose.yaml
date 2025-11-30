@@ -18,6 +18,8 @@ services:
           xmake
         echo -e ""
 
+        echo -e "settings set target.disable-aslr false" >> ~/.lldbinit
+
         echo -e "Use \033[1;32mClang\033[0m as the default toolchain."
         xmake f --toolchain=clang -c -q
         echo -e "Use \033[1;32mLLDB\033[0m as the default debugger."
