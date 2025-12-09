@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, develop]
+  pull_request:
+    branches: [master, main]
+
+env:
+  GCC_VERSION: "14"
+  CLANG_VERSION: "20"
+
+jobs:
+  build-linux:
+    name: Linux Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [debug, release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+          actions-cache-folder: ".xmake-cache"
+
+      - name: Install Clang ${{ env.CLANG_VERSION }}
+        if: matrix.compiler == 'clang'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-${{ env.CLANG_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.CLANG_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.CLANG_VERSION }} 255
+          clang --version
+
+      - name: Install GCC ${{ env.GCC_VERSION }}
+        if: matrix.compiler == 'gcc'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-${{ env.GCC_VERSION }} g++-${{ env.GCC_VERSION }}
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ env.GCC_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ env.GCC_VERSION }} 255
+          gcc --version
+
+      - name: Configure (Clang)
+        if: matrix.compiler == 'clang'
+        run: xmake f -m ${{ matrix.build_type }} --toolchain=clang -y
+
+      - name: Configure (GCC)
+        if: matrix.compiler == 'gcc'
+        run: xmake f -m ${{ matrix.build_type }} --toolchain=gcc -y
+
+      - name: Build
+        run: xmake build -v
+
+      - name: Run Tests
+        run: xmake test -v
+
+  build-macos:
+    name: macOS Build
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [debug, release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+          actions-cache-folder: ".xmake-cache"
+
+      - name: Install Clang ${{ env.CLANG_VERSION }}
+        if: matrix.compiler == 'clang'
+        run: |
+          brew install llvm@${{ env.CLANG_VERSION }}
+          $(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin/clang --version
+
+      - name: Install GCC ${{ env.GCC_VERSION }}
+        if: matrix.compiler == 'gcc'
+        run: |
+          brew install gcc@${{ env.GCC_VERSION }}
+          $(brew --prefix gcc@${{ env.GCC_VERSION }})/bin/gcc-${{ env.GCC_VERSION }} --version
+
+      - name: Configure (Clang)
+        if: matrix.compiler == 'clang'
+        run: |
+          export PATH="$(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin:$PATH"
+          xmake f -m ${{ matrix.build_type }} --toolchain=clang -y
+
+      - name: Configure (GCC)
+        if: matrix.compiler == 'gcc'
+        run: |
+          export PATH="$(brew --prefix gcc@${{ env.GCC_VERSION }})/bin:$PATH"
+          xmake f -m ${{ matrix.build_type }} --toolchain=gcc -y
+
+      - name: Build
+        run: xmake build -v
+
+      - name: Run Tests
+        run: xmake test -v
+
+  build-windows:
+    name: Windows Build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        compiler: [msvc, clang]
+        build_type: [debug, release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+          actions-cache-folder: ".xmake-cache"
+
+      - name: Configure
+        run: xmake f -m ${{ matrix.build_type }} --toolchain=${{ matrix.compiler }} -y
+
+      - name: Build
+        run: xmake build -v
+
+      - name: Run Tests
+        run: xmake test -v
+
+  linter:
+    name: Clang-Tidy Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+          actions-cache-folder: ".xmake-cache"
+
+      - name: Install Clang ${{ env.CLANG_VERSION }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-${{ env.CLANG_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.CLANG_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.CLANG_VERSION }} 255
+          clang --version
+
+      - name: Configure (Clang)
+        run: xmake f -m debug --toolchain=clang -y
+
+      - name: Install Clang-Tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy-${{ env.CLANG_VERSION }} clang-format-${{ env.CLANG_VERSION }}
+          clang-tidy --version
+          clang-format --version
+
+      - name: Build
+        run: |
+          xmake build -v
+          xmake test -v
+
+      - name: Run Clang-Tidy
+        run: |
+          xmake check clang.tidy

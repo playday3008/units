@@ -1,6 +1,7 @@
-#include <iostream>
+#include <example/example.hpp>
+#include <print>
 
-int main(int argc, char **argv) {
-  std::cout << "hello world!" << std::endl;
+auto main() noexcept(false) -> int {
+  std::print("hello {}!\n", example::who);
   return 0;
 }

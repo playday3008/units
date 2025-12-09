@@ -33,6 +33,8 @@ services:
         echo -e "Run:            \033[1;32m xmake run        \033[0m"
         echo -e "Debug:          \033[1;32m xmake run -d     \033[0m"
         echo -e ""
+        echo -e "For more examples, see comments in the \033[1;32m./xmake.lua\033[0m file."
+        echo -e ""
 
         bash
       '

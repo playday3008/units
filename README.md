@@ -24,6 +24,18 @@ xmake -m release # Build in release mode
 xmake -m debug   # Build in debug mode
 ```
 
+### Build Modes
+
+| Mode | Description |
+|------|-------------|
+| `debug` | Debug mode |
+| `release` | Release mode |
+| `releasedbg` | Release with debug info |
+| `minsizerel` | Minimum size release |
+| `check` | Sanitizers enabled (address, thread, memory, leak, undefined) |
+| `profile` | Profiling mode |
+| `coverage` | Code coverage mode |
+
 ## Running
 
 ```bash
@@ -36,6 +48,25 @@ xmake run
 # Better be built in debug mode first
 # Or good luck debugging release builds!
 xmake run -d
+```
+
+## Testing
+
+```bash
+xmake test -v
+```
+
+## Linting
+
+```bash
+xmake check clang.tidy
+```
+
+## Formatting
+
+```bash
+xmake format                 # Format all source files
+xmake format -f "src/*.cpp"  # Format specific files
 ```
 
 ## Development Container
