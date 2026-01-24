@@ -49,9 +49,27 @@
 
     //#endregion C/C++
 
+    //#region clangd
+
+    "clangd.arguments": [
+        "--experimental-modules-support"
+    ],
+
+    //#endregion clangd
+
+    //#region CMake
+
+    "cmake.buildDirectory": "${workspaceFolder}/build/cmake",
+    "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "cmake.exportCompileCommandsFile": true,
+
+    //#endregion CMake
+
     //#region XMake
 
+    "xmake.buildDirectory": "${workspaceRoot}/build/xmake",
     "xmake.compileCommandsDirectory": "${workspaceRoot}/build",
+    "xmake.compileCommandsBackend": "clangd",
 
     //#endregion XMake
 }

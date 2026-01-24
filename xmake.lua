@@ -1,85 +1,75 @@
+-- xmake.lua
+set_project("units")
+set_version("0.1.0")
+set_xmakever("2.8.0")
+
 add_rules(
-    -- Normal build modes
-    "mode.debug",       -- Debug mode
-    "mode.release",     -- Release mode
-    "mode.releasedbg",  -- Release with debug info
-    "mode.minsizerel",  -- Minimum size release
-    -- Special build modes
-    "mode.check",       -- Sanitizers enabled (address, thread, memory, leak, undefined)
-    "mode.profile",     -- Profiling mode
-    "mode.coverage"     -- Code coverage mode
+    "mode.debug",
+    "mode.release",
+    "mode.releasedbg",
+    "mode.check",
+    "mode.coverage"
 )
 
 -- Generate compile_commands.json for IDE integration
 add_rules("plugin.compile_commands.autoupdate", {outputdir = "build"})
 
--- Set C++ language standard to C++23
+-- C++23 requirement
 set_languages("c++23")
 
 -- Enable all, extra, and pedantic warnings
 set_warnings("all", "extra", "pedantic")
 
--- Enable C++ exception handling on MSVC
-if is_plat("windows") and is_plat("msvc") then
-    add_cxflags("/EHsc")
-end
-
--- Add Catch2 package for testing
-add_requires("catch2 3.x")
-
 -- Enable sanitizers in check mode
 if is_mode("check") then
     set_policy("build.sanitizer.address", true)
-    set_policy("build.sanitizer.thread", true)
-    set_policy("build.sanitizer.memory", true)
-    set_policy("build.sanitizer.leak", true)
     set_policy("build.sanitizer.undefined", true)
 end
 
--- Header-only library
-target("example")
+-- Options
+option("tests", {default = true, description = "Build unit tests"})
+option("compile_fail_tests", {default = true, description = "Enable compile-fail tests"})
+option("embedded", {default = false, description = "Embedded-friendly (no exceptions/RTTI)"})
+
+-- Main header-only library
+target("units")
     set_kind("headeronly")
-    add_headerfiles("include/(example/**.hpp)")
     add_includedirs("include", {public = true})
+    add_headerfiles("include/(units/**.hpp)")
 
--- Main executable
-target("AbstractProgrammingProject")
-    set_kind("binary")
-    add_files("src/*.cpp")
-    add_deps("example")
-
--- Test executable
-target("tests")
-    set_kind("binary")
-    set_default(false)
-    add_deps("example")
-    -- Use dynamic runtime on Windows to match pre-built packages
-    on_load(function (target)
-        if target:is_plat("windows") then
-            if is_mode("debug") or is_mode("releasedbg") then
-                target:set("runtimes", "MDd")
-            else
-                target:set("runtimes", "MD")
-            end
-        end
-    end)
-    -- Automatically add test files matching the pattern tests/test_*.cpp
-    for _, file in ipairs(os.files("tests/test_*.cpp")) do
-        local name = string.replace(path.basename(file), "test_", "")
-        add_tests(name, {
-            files = file,
-            realtime_output = true,
-            packages = "catch2",
-            runargs = "-s",
-        })
+    -- Embedded configuration
+    if has_config("embedded") then
+        add_defines("UNITS_NO_EXCEPTIONS", "UNITS_NO_RTTI", {public = true})
+        add_cxxflags("-fno-exceptions", "-fno-rtti", {tools = {"gcc", "clang"}})
+        add_cxxflags("/EHs-c-", "/GR-", {tools = {"cl"}})
     end
+target_end()
+
+-- Examples
+target("examples")
+    set_kind("binary")
+    set_default(true)
+    add_deps("units")
+    add_files("src/main.cpp")
+    set_group("examples")
+target_end()
+
+-- Include test configuration
+if has_config("tests") then
+    includes("tests")
+end
+
+-- Installation rules
+on_install(function (target)
+    os.cp("include/units", path.join(target:installdir(), "include", "units"))
+end)
 
 -- Define a custom task for code formatting using clang-format
 task("format")
     on_run(function ()
         import("core.base.option")
         import("lib.detect.find_tool")
-        
+
         local tool = find_tool("clang-format")
         if not tool then
             raise("clang-format not found!")
@@ -108,7 +98,7 @@ task("format")
             end
         end
     end)
-    
+
     set_menu {
         usage = "xmake format [options]",
         description = "Format code files",
@@ -117,29 +107,20 @@ task("format")
         }
     }
 
+-- Package definition using xpack
+includes("@builtin/xpack")
 
--- ==============================
--- Basic Build Commands Reference
--- ==============================
---
--- Build modes:
---  xmake f -m <mode>
---
--- Build targets:
---  xmake build [target (optional)]
---
--- Run targets:
---  xmake run [target (optional)]
---
--- Debug targets:
---  xmake run -d [target (optional)]
---
--- Test targets:
---  xmake test -v [target (optional)]
---
--- Linter:
---  xmake check clang.tidy [target (optional)]
---
--- Formatter:
---  xmake format [-f file_patterns (optional)]
---
+xpack("units")
+    --set_homepage("https://github.com/...") -- TODO: Update homepage URL
+    set_description("C++23 compile-time physical quantities and units library")
+    set_license("MIT")
+    set_formats("srczip", "srctargz")
+
+    add_sourcefiles("include/(units/**.hpp)")
+    add_sourcefiles("LICENSE")
+    add_sourcefiles("README.md")
+
+    on_load(function (package)
+        package:set("basename", "units-v" .. package:version())
+    end)
+xpack_end()
