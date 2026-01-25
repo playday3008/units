@@ -63,8 +63,8 @@ jobs:
 
       - name: Run Static and Runtime Tests
         run: |
-          xmake build test
-          xmake run test
+          xmake build tests
+          xmake run tests
 
       - name: Build and Run Example Tests
         run: |
@@ -135,8 +135,8 @@ jobs:
 
       - name: Run Static and Runtime Tests
         run: |
-          xmake build test
-          xmake run test
+          xmake build tests
+          xmake run tests
 
       - name: Build and Run Example Tests
         run: |
@@ -186,8 +186,8 @@ jobs:
 
       - name: Run Static and Runtime Tests
         run: |
-          xmake build test
-          xmake run test
+          xmake build tests
+          xmake run tests
 
       - name: Build and Run Example Tests
         run: |
@@ -394,8 +394,8 @@ jobs:
       - name: Build
         run: |
           xmake build -v
-          xmake build test
-          xmake run test
+          xmake build tests
+          xmake run tests
 
       - name: Run Clang-Tidy
         run: |

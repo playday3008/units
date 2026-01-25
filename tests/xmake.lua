@@ -127,8 +127,8 @@ target("compile_time_benchmark")
     set_group("tests/benchmark")
 target_end()
 
--- Test aggregation target
-target("test")
+-- Tests aggregation target
+target("tests")
     set_kind("phony")
     set_default(false)
     add_deps("static_tests")
