@@ -9,6 +9,7 @@ on:
 env:
   GCC_VERSION: "14"
   CLANG_VERSION: "20"
+  CLANG_LINT_VERSION: "21"
 
 jobs:
   # ============================================================================
@@ -377,10 +378,16 @@ jobs:
       - name: Configure (Clang)
         run: xmake f -m debug --toolchain=clang -y
 
-      - name: Install Clang-Tidy
+      - name: Install Clang-Tidy and Clang-Format
         run: |
+          # Add LLVM apt repository for latest clang-format
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          sudo add-apt-repository -y "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ env.CLANG_LINT_VERSION }} main"
           sudo apt-get update
-          sudo apt-get install -y clang-tidy-${{ env.CLANG_VERSION }} clang-format-${{ env.CLANG_VERSION }}
+          # Install clang-tidy and clang-format
+          sudo apt-get install -y clang-tidy-${{ env.CLANG_LINT_VERSION }} clang-format-${{ env.CLANG_LINT_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-${{ env.CLANG_LINT_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-${{ env.CLANG_LINT_VERSION }} 255
           clang-tidy --version
           clang-format --version
 
