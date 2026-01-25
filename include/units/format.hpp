@@ -203,8 +203,8 @@ struct std::formatter<units::quantity<Ref, Rep>> {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
     constexpr auto parse(std::format_parse_context &ctx) {
-      const auto *it  = ctx.begin();
-      const auto *end = ctx.end();
+      auto it  = ctx.begin();
+      auto end = ctx.end();
 
       // Build format spec for the numeric value
       format_spec = "{:";

@@ -256,7 +256,8 @@ namespace units {
       /// Converting constructor from compatible quantity_point
       /// Handles conversion between different origins and units
       template<Reference OtherRef, PointOrigin OtherOrigin, typename OtherRep>
-        requires(!std::same_as<quantity_point, quantity_point<OtherRef, OtherOrigin, OtherRep>>)
+        requires(!std::same_as<quantity_point<Ref, Origin, Rep>,
+                               quantity_point<OtherRef, OtherOrigin, OtherRep>>)
              && std::convertible_to<OtherRep, Rep>
       constexpr explicit quantity_point(
           const quantity_point<OtherRef, OtherOrigin, OtherRep> &other) noexcept;
