@@ -31,47 +31,47 @@
 // Core components
 // =============================================================================
 
-#include <units/core/quantity.hpp>
-#include <units/core/quantity_point.hpp>
-#include <units/core/quantity_spec.hpp>
-#include <units/core/ratio.hpp>
-#include <units/core/reference.hpp>
-#include <units/core/unit.hpp>
+#include <units/core/quantity.hpp>       // IWYU pragma: export
+#include <units/core/quantity_point.hpp> // IWYU pragma: export
+#include <units/core/quantity_spec.hpp>  // IWYU pragma: export
+#include <units/core/ratio.hpp>          // IWYU pragma: export
+#include <units/core/reference.hpp>      // IWYU pragma: export
+#include <units/core/unit.hpp>           // IWYU pragma: export
 
 // =============================================================================
 // ISQ quantity specifications
 // =============================================================================
 
-#include <units/systems/isq/base.hpp>
-#include <units/systems/isq/electromagnetism.hpp>
-#include <units/systems/isq/mechanics.hpp>
-#include <units/systems/isq/thermodynamics.hpp>
+#include <units/systems/isq/base.hpp>             // IWYU pragma: export
+#include <units/systems/isq/electromagnetism.hpp> // IWYU pragma: export
+#include <units/systems/isq/mechanics.hpp>        // IWYU pragma: export
+#include <units/systems/isq/thermodynamics.hpp>   // IWYU pragma: export
 
 // =============================================================================
 // SI system
 // =============================================================================
 
-#include <units/systems/si/base.hpp>
-#include <units/systems/si/constants.hpp>
-#include <units/systems/si/derived.hpp>
-#include <units/systems/si/literals.hpp>
-#include <units/systems/si/prefixes.hpp>
-#include <units/systems/si/temperature.hpp>
+#include <units/systems/si/base.hpp>        // IWYU pragma: export
+#include <units/systems/si/constants.hpp>   // IWYU pragma: export
+#include <units/systems/si/derived.hpp>     // IWYU pragma: export
+#include <units/systems/si/literals.hpp>    // IWYU pragma: export
+#include <units/systems/si/prefixes.hpp>    // IWYU pragma: export
+#include <units/systems/si/temperature.hpp> // IWYU pragma: export
 
 // =============================================================================
 // Additional unit systems
 // =============================================================================
 
-#include <units/systems/cgs.hpp>
-#include <units/systems/imperial.hpp>
-#include <units/systems/natural.hpp>
+#include <units/systems/cgs.hpp>      // IWYU pragma: export
+#include <units/systems/imperial.hpp> // IWYU pragma: export
+#include <units/systems/natural.hpp>  // IWYU pragma: export
 
 // =============================================================================
 // Formatting and mathematical functions
 // =============================================================================
 
-#include <units/format.hpp>
-#include <units/math.hpp>
+#include <units/format.hpp> // IWYU pragma: export
+#include <units/math.hpp>   // IWYU pragma: export
 
 // =============================================================================
 // Optional: Bring SI literals into a convenient namespace

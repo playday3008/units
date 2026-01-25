@@ -171,4 +171,4 @@ jobs:
 
       - name: Run Clang-Tidy
         run: |
-          xmake check clang.tidy
+          xmake lint

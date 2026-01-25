@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <units/core/quantity.hpp>
-#include <units/core/reference.hpp>
+#include <units/core/quantity_spec.hpp>
 #include <units/core/unit.hpp>
 #include <units/systems/isq/base.hpp>
 #include <units/systems/isq/mechanics.hpp>

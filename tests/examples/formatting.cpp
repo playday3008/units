@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 // README example: Formatting
 
-#include <units/format.hpp>
 #include <units/units.hpp>
 
 #include <format>
 
-auto main() -> int {
+auto main() noexcept(false) -> int {
   using namespace units::si::literals;
 
   auto speed = 25.5_m / 1.0_s;

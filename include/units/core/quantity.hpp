@@ -5,6 +5,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include <units/core/quantity_spec.hpp>
 #include <units/core/reference.hpp>
 #include <units/core/unit.hpp>
 

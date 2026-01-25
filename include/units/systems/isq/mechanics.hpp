@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <concepts>
+
+#include <units/core/quantity_spec.hpp>
 #include <units/systems/isq/base.hpp>
 
 namespace units::isq {

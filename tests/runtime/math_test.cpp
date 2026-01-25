@@ -3,10 +3,15 @@
 // Runtime tests for mathematical functions with quantities
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include <cmath>
-#include <limits>
+
 #include <units/units.hpp>
+
+#include <cmath>
+
+#include <limits>
+#include <numbers>
 
 using namespace units;
 using namespace units::si;
@@ -236,10 +241,15 @@ TEST_CASE("Edge cases with special values", "[math][edge]") {
     auto min_result = min(nan, normal);
     auto max_result = max(nan, normal);
 
+    // clang-format off
+    // Must be inside another parenthesis to satisfy REQUIRE macro
+
     // At least one should return the normal value
     // (behavior depends on order and implementation)
-    REQUIRE(min_result.value() == 5.0 || max_result.value() == 5.0 || std::isnan(min_result.value())
-            || std::isnan(max_result.value()));
+    REQUIRE((min_result.value() == 5.0 || max_result.value() == 5.0
+            || std::isnan(min_result.value()) || std::isnan(max_result.value())));
+
+    // clang-format on
   }
 }
 

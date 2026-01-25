@@ -7,14 +7,18 @@
 /// and std::format are not fully constexpr. This file tests that the
 /// formatting infrastructure compiles correctly.
 
-#include <format>
-#include <string>
-
+#include <units/core/quantity.hpp>
+#include <units/core/reference.hpp>
 #include <units/format.hpp>
+#include <units/systems/isq/base.hpp>
 #include <units/systems/si/base.hpp>
 #include <units/systems/si/derived.hpp>
 #include <units/systems/si/literals.hpp>
 #include <units/systems/si/prefixes.hpp>
+
+#include <format>
+#include <string>
+#include <type_traits>
 
 namespace units::test {
 
@@ -126,7 +130,7 @@ namespace units::test {
 
 } // namespace units::test
 
-auto main() -> int {
+auto main() noexcept(false) -> int {
   // Run all tests
   bool all_passed = true;
 

@@ -3,7 +3,9 @@
 // Runtime tests for conversion precision and round-trip accuracy
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+
 #include <units/units.hpp>
 
 using namespace units;
@@ -135,6 +137,8 @@ TEST_CASE("Derived unit conversions", "[conversion][precision]") {
     constexpr auto distance = 1000.0_m;
     constexpr auto time     = 100.0_s;
     auto           speed    = distance / time; // 10 m/s
+
+    REQUIRE_THAT(speed.value(), Catch::Matchers::WithinRel(10.0, 1e-12));
 
     // Convert to km/s by converting distance
     auto distance_km = distance.in(kilometre);

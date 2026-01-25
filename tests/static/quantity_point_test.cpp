@@ -3,7 +3,16 @@
 // Static tests for quantity_point (affine quantities)
 // If this file compiles, all tests pass.
 
+#include <units/core/quantity.hpp>
+#include <units/core/quantity_point.hpp>
 #include <units/systems/si/temperature.hpp>
+
+#include <type_traits>
+
+// Due to floating point precision, use approximate comparison
+static constexpr auto approx_equal(double lhs, double rhs, double epsilon = 1e-10) -> bool {
+  return (lhs - rhs) < epsilon && (rhs - lhs) < epsilon;
+}
 
 namespace {
 
@@ -82,11 +91,6 @@ namespace {
   // 32°F == 0°C (freezing point of water)
   constexpr auto freezing_f      = fahrenheit_pt(32.0);
   constexpr auto freezing_f_to_c = to_celsius(freezing_f);
-
-  // Due to floating point precision, use approximate comparison
-  constexpr auto approx_equal(double lhs, double rhs, double epsilon = 1e-10) -> bool {
-    return (lhs - rhs) < epsilon && (rhs - lhs) < epsilon;
-  }
 
   static_assert(approx_equal(freezing_f_to_c.value(), 0.0));
 

@@ -3,7 +3,9 @@
 // Runtime tests for affine quantities (quantity_point) - temperature conversions
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+
 #include <units/units.hpp>
 
 using namespace units;

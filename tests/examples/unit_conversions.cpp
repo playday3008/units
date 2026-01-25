@@ -10,7 +10,7 @@ auto main() -> int {
   auto distance_km = distance_m.in(units::si::kilometre); // 1.5 km
 
   // Get raw value in specific unit
-  double value_in_km = distance_m.numerical_value_in(units::si::kilometre);
+  const double value_in_km = distance_m.numerical_value_in(units::si::kilometre);
 
   (void)distance_km;
   (void)value_in_km;

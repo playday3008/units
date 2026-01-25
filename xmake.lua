@@ -107,6 +107,59 @@ task("format")
         }
     }
 
+-- Define a custom task for clang-tidy linting (excludes compile_fail tests)
+task("lint")
+    on_run(function ()
+        import("core.base.option")
+
+        -- Collect all source files, excluding compile_fail directory
+        local files = {}
+        for _, f in ipairs(os.files("include/**.hpp")) do
+            table.insert(files, f)
+        end
+        for _, f in ipairs(os.files("src/**.cpp")) do
+            table.insert(files, f)
+        end
+        for _, f in ipairs(os.files("tests/**.cpp")) do
+            -- Exclude compile_fail directory (intentional compile errors)
+            if not f:find("compile_fail", 1, true) then
+                table.insert(files, f)
+            end
+        end
+
+        -- Build file pattern string for clang-tidy
+        local pattern = table.concat(files, ":")
+
+        -- Build command arguments, forwarding all options
+        local args = {"check", "clang.tidy", "-f", pattern}
+        if option.get("fix") then table.insert(args, "--fix") end
+        if option.get("fix_errors") then table.insert(args, "--fix_errors") end
+        if option.get("fix_notes") then table.insert(args, "--fix_notes") end
+        if option.get("quiet") then table.insert(args, "--quiet") end
+        if option.get("list") then table.insert(args, "--list") end
+        if option.get("create") then table.insert(args, "--create") end
+        if option.get("jobs") then table.insert(args, "-j") table.insert(args, option.get("jobs")) end
+        if option.get("checks") then table.insert(args, "--checks=" .. option.get("checks")) end
+        if option.get("configfile") then table.insert(args, "--configfile=" .. option.get("configfile")) end
+
+        os.execv("xmake", args)
+    end)
+
+    set_menu {
+        usage = "xmake lint [options]",
+        description = "Run clang-tidy (excludes compile_fail tests)",
+        options = {
+            {nil, "fix", "k", nil, "Apply suggested fixes"},
+            {nil, "fix_errors", "k", nil, "Apply suggested error fixes"},
+            {nil, "fix_notes", "k", nil, "Apply suggested note fixes"},
+            {'l', "list", "k", nil, "Show clang-tidy checks list"},
+            {nil, "create", "k", nil, "Create a .clang-tidy file"},
+            {'j', "jobs", "kv", nil, "Number of parallel jobs"},
+            {nil, "checks", "kv", nil, "Set the given checks"},
+            {nil, "configfile", "kv", nil, "Path to .clang-tidy config file"}
+        }
+    }
+
 -- Package definition using xpack
 includes("@builtin/xpack")
 

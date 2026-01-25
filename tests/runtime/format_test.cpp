@@ -3,9 +3,13 @@
 // Runtime tests for std::format output with quantities
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
-#include <format>
+
 #include <units/units.hpp>
+
+#include <format>
+#include <numbers>
 
 using namespace units;
 using namespace units::si;
@@ -69,13 +73,13 @@ TEST_CASE("Derived unit formatting", "[format]") {
 
 TEST_CASE("Precision formatting", "[format]") {
   SECTION("Fixed precision with .2f") {
-    auto value     = make_quantity(3.14159265, metre);
+    auto value     = make_quantity(std::numbers::pi, metre);
     auto formatted = std::format("{:.2f}", value);
     REQUIRE_THAT(formatted, Catch::Matchers::ContainsSubstring("3.14"));
   }
 
   SECTION("Fixed precision with .4f") {
-    auto value     = make_quantity(3.14159265, metre);
+    auto value     = make_quantity(std::numbers::pi, metre);
     auto formatted = std::format("{:.4f}", value);
     REQUIRE_THAT(formatted, Catch::Matchers::ContainsSubstring("3.1416"));
   }

@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include <units/core/quantity_spec.hpp>
 #include <units/core/unit.hpp>
 #include <units/systems/isq/base.hpp>
 #include <units/systems/isq/mechanics.hpp>
-#include <units/systems/si/base.hpp>
 
 namespace units::si {
 

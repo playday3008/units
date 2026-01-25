@@ -19,8 +19,8 @@ static auto compute_speed_units(double distance, double time) {
 
 // Both functions generate identical assembly!
 auto main() -> int {
-  volatile double d = 100.0;
-  volatile double t = 9.58;
+  const volatile double d = 100.0;
+  const volatile double t = 9.58;
 
   auto raw  = compute_speed_raw(d, t);
   auto safe = compute_speed_units(d, t);

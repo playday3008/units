@@ -3,13 +3,16 @@
 // Comprehensive compile-time tests for the quantity class.
 // If this file compiles, all tests pass.
 
-#include <type_traits>
-
 #include <units/core/quantity.hpp>
+#include <units/core/reference.hpp>
+#include <units/core/unit.hpp>
+#include <units/systems/isq/base.hpp>
 #include <units/systems/si/base.hpp>
-#include <units/systems/si/derived.hpp>
 #include <units/systems/si/literals.hpp>
 #include <units/systems/si/prefixes.hpp>
+
+#include <concepts>
+#include <type_traits>
 
 namespace units::test {
 

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <algorithm>
 #include <format>
 #include <string>

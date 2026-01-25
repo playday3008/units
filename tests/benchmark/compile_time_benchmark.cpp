@@ -12,6 +12,8 @@
 /// Or use xmake:
 ///   xmake build compile_time_benchmark
 
+#include <numbers>
+
 #include <units/units.hpp>
 
 using namespace units;
@@ -36,6 +38,10 @@ namespace benchmark_si_base {
 
   static_assert(length_m.value() == 100.0);
   static_assert(length_km.value() == 1.5);
+  static_assert(length_cm.value() == 50.0);
+  static_assert(length_mm.value() == 250.0);
+  static_assert(length_sum.value() == 1600.0);
+  static_assert(length_diff.value() == 1400.0);
 
   // Mass operations
   constexpr auto mass_kg = 75.0_kg;
@@ -43,6 +49,7 @@ namespace benchmark_si_base {
 
   constexpr auto mass_sum = mass_kg + mass_g.in(kilogram);
   static_assert(mass_kg.value() == 75.0);
+  static_assert(mass_sum.value() == 75.5);
 
   // Time operations
   constexpr auto time_s  = 60.0_s;
@@ -50,6 +57,7 @@ namespace benchmark_si_base {
 
   constexpr auto time_sum = time_s + time_ms.in(second);
   static_assert(time_s.value() == 60.0);
+  static_assert(time_sum.value() == 60.5);
 
   // Electric current
   constexpr auto current = 2.5_A;
@@ -108,7 +116,7 @@ namespace benchmark_derived {
   static_assert(power.value() < 250.0);
 
   // Pressure calculation: P = F / A
-  constexpr auto area_side = 1.414213562373095_m; // sqrt(2)
+  constexpr auto area_side = operator""_m(std::numbers::sqrt2_v<long double>); // sqrt(2)
   constexpr auto area      = area_side * area_side;
   constexpr auto pressure  = force / area;
 
@@ -118,6 +126,8 @@ namespace benchmark_derived {
   // Frequency
   constexpr auto period    = 0.001_s;
   constexpr auto frequency = make_quantity(1.0, si::hertz) / period * period;
+
+  static_assert(frequency.value() == 1.0);
 
   // Named SI derived units
   constexpr auto force_n     = 100.0_N;
@@ -145,15 +155,24 @@ namespace benchmark_temperature {
   constexpr auto kelvin_273 = kelvin_pt(273.15);
   constexpr auto kelvin_373 = kelvin_pt(373.15);
 
+  static_assert(kelvin_0.value() == 0.0);
+  static_assert(kelvin_273.value() == 273.15);
+  static_assert(kelvin_373.value() == 373.15);
+
   // Celsius temperature points
   constexpr auto celsius_0   = celsius_pt(0.0);
   constexpr auto celsius_100 = celsius_pt(100.0);
   constexpr auto celsius_m40 = celsius_pt(-40.0);
 
+  static_assert(celsius_m40.value() == -40.0);
+
   // Fahrenheit temperature points
   constexpr auto fahrenheit_32  = fahrenheit_pt(32.0);
   constexpr auto fahrenheit_212 = fahrenheit_pt(212.0);
   constexpr auto fahrenheit_m40 = fahrenheit_pt(-40.0);
+
+  static_assert(fahrenheit_212.value() == 212.0);
+  static_assert(fahrenheit_m40.value() == -40.0);
 
   // Temperature differences
   constexpr auto temp_diff = celsius_100 - celsius_0;
@@ -163,12 +182,13 @@ namespace benchmark_temperature {
   constexpr auto celsius_0_to_k = to_kelvin(celsius_0);
   static_assert(celsius_0_to_k.value() == 273.15);
 
-  // Convert Fahrenheit to Celsius
+  // Convert Fahrenheit to Celsius (32°F == 0°C)
   constexpr auto freezing_f_to_c = to_celsius(fahrenheit_32);
-  // 32°F == 0°C
+  static_assert(freezing_f_to_c.value() == 0.0);
 
-  // Convert Kelvin to Fahrenheit
+  // Convert Kelvin to Fahrenheit (0K == -459.67°F)
   constexpr auto abs_zero_f = to_fahrenheit(kelvin_0);
+  static_assert(abs_zero_f.value() == -459.67);
 
 } // namespace benchmark_temperature
 
@@ -191,6 +211,18 @@ namespace benchmark_conversions {
   static_assert(ft_to_m.value() > 30.0);
   static_assert(ft_to_m.value() < 31.0);
 
+  constexpr auto in_to_m = length_in.in(metre);
+  static_assert(in_to_m.value() > 0.30);
+  static_assert(in_to_m.value() < 0.31);
+
+  constexpr auto mi_to_m = length_mi.in(metre);
+  static_assert(mi_to_m.value() > 1609.0);
+  static_assert(mi_to_m.value() < 1610.0);
+
+  constexpr auto yd_to_m = length_yd.in(metre);
+  static_assert(yd_to_m.value() > 91.0);
+  static_assert(yd_to_m.value() < 92.0);
+
   // Mass conversions
   constexpr auto mass_lb = make_quantity(150.0, pound);
   constexpr auto mass_oz = make_quantity(16.0, ounce);
@@ -198,6 +230,10 @@ namespace benchmark_conversions {
   constexpr auto lb_to_kg = mass_lb.in(kilogram);
   static_assert(lb_to_kg.value() > 68.0);
   static_assert(lb_to_kg.value() < 69.0);
+
+  constexpr auto oz_to_kg = mass_oz.in(kilogram);
+  static_assert(oz_to_kg.value() > 0.45);
+  static_assert(oz_to_kg.value() < 0.46);
 
   // CGS units
   using namespace cgs;

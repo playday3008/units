@@ -5,7 +5,7 @@
 
 #include <print>
 
-auto main() -> int {
+auto main() noexcept(false) -> int {
   using namespace units::si;
 
   // Create temperature points

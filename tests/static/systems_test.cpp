@@ -4,6 +4,7 @@
 // Tests CGS, Imperial, SI constants, and Natural unit systems
 
 #include <units/core/quantity.hpp>
+#include <units/core/unit.hpp>
 #include <units/systems/cgs.hpp>
 #include <units/systems/imperial.hpp>
 #include <units/systems/natural.hpp>

@@ -7,7 +7,7 @@
 #include <numbers>
 #include <print>
 
-auto main() -> int {
+auto main() noexcept(false) -> int {
   using namespace units::si::literals;
   using namespace units;
 

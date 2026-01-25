@@ -13,7 +13,7 @@ ImplementationFileExtensions:
   - cpp
   - cxx
 
-HeaderFilterRegex: '.*/include/.*|.*/src/.*|.*/tests/.*'
+HeaderFilterRegex: '.*/include/.*|.*/src/.*|.*/tests/(?!compile_fail).*'
 ExcludeHeaderFilterRegex: ''
 
 Checks: >
@@ -32,6 +32,7 @@ Checks: >
   hicpp-*,
   llvm-*,
   -llvm-else-after-return,
+  -llvm-header-guard,
   -llvmlibc-*,
   misc-*,
   -misc-use-anonymous-namespace,
@@ -39,6 +40,7 @@ Checks: >
   performance-*,
   -performance-avoid-endl,
   portability-*,
+  -portability-avoid-pragma-once,
   readability-*,
   -readability-else-after-return,
   -readability-identifier-length,

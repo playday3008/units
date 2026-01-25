@@ -7,6 +7,8 @@
 #include <units/systems/isq/base.hpp>
 #include <units/systems/isq/mechanics.hpp>
 
+#include <concepts>
+
 namespace units::test {
 
   // =============================================================================

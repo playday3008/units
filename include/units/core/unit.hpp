@@ -3,12 +3,12 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 #include <algorithm>
 #include <concepts>
 #include <type_traits>
 
-#include <units/core/quantity_spec.hpp>
 #include <units/core/ratio.hpp>
 
 namespace units {

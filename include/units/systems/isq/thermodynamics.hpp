@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include <units/systems/isq/base.hpp>
+#include <concepts>
+
+#include <units/core/quantity_spec.hpp>
 #include <units/systems/isq/mechanics.hpp>
 
 namespace units::isq {

@@ -6,7 +6,9 @@
 #include <type_traits>
 
 #include <units/core/quantity.hpp>
+#include <units/core/quantity_spec.hpp>
 #include <units/core/reference.hpp>
+#include <units/core/unit.hpp>
 
 namespace units {
 

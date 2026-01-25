@@ -3,11 +3,15 @@
 // Static assertion tests for units, references, and conversions
 // All tests execute at compile time via static_assert
 
+#include <units/core/ratio.hpp>
 #include <units/core/reference.hpp>
 #include <units/core/unit.hpp>
+#include <units/systems/isq/base.hpp>
 #include <units/systems/si/base.hpp>
 #include <units/systems/si/derived.hpp>
 #include <units/systems/si/prefixes.hpp>
+
+#include <concepts>
 
 namespace units::test {
 

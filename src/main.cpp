@@ -467,7 +467,7 @@ static void kinematics_example() {
 // Main
 // =============================================================================
 
-auto main() -> int {
+auto main() noexcept(false) -> int {
   std::println("C++23 Units Library - Comprehensive Examples\n");
   std::println("=============================================\n");
 

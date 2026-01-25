@@ -10,7 +10,6 @@
 #include <units/systems/isq/mechanics.hpp>
 #include <units/systems/si/base.hpp>
 #include <units/systems/si/derived.hpp>
-#include <units/systems/si/prefixes.hpp>
 
 namespace units::si {
 
