@@ -90,3 +90,38 @@ if(UNITS_ENABLE_COMPILE_FAIL_TESTS)
     add_compile_fail_test(fail_point_plus_point compile_fail/point_plus_point.cpp)
     add_compile_fail_test(fail_torque_to_energy compile_fail/torque_to_energy.cpp)
 endif()
+
+# Example tests - verify example code compiles and runs
+option(UNITS_ENABLE_EXAMPLE_TESTS "Enable example tests" ON)
+
+if(UNITS_ENABLE_EXAMPLE_TESTS)
+    set(EXAMPLE_TEST_SOURCES
+        examples/basic_quantities.cpp
+        examples/cgs_units.cpp
+        examples/derived_quantities.cpp
+        examples/natural_units.cpp
+        examples/quick_start.cpp
+        examples/imperial_units.cpp
+        examples/math_functions.cpp
+        examples/unit_conversions.cpp
+        examples/zero_overhead.cpp
+        examples/temperature_conversions.cpp
+        examples/math_functions_extended.cpp
+        examples/formatting.cpp
+    )
+
+    foreach(source ${EXAMPLE_TEST_SOURCES})
+        get_filename_component(test_name ${source} NAME_WE)
+        set(target_name "example_${test_name}")
+        add_executable(${target_name} ${source})
+        target_link_libraries(${target_name} PRIVATE units::units)
+        add_test(NAME ${target_name} COMMAND ${target_name})
+    endforeach()
+
+    # Convenience target to build all example tests
+    add_custom_target(example_tests)
+    foreach(source ${EXAMPLE_TEST_SOURCES})
+        get_filename_component(test_name ${source} NAME_WE)
+        add_dependencies(example_tests "example_${test_name}")
+    endforeach()
+endif()

@@ -11,8 +11,11 @@ env:
   CLANG_VERSION: "20"
 
 jobs:
-  build-linux:
-    name: Linux Build
+  # ============================================================================
+  # XMake Builds
+  # ============================================================================
+  build-linux-xmake:
+    name: Linux xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,11 +60,36 @@ jobs:
       - name: Build
         run: xmake build -v
 
-      - name: Run Tests
-        run: xmake test -v
+      - name: Run Static and Runtime Tests
+        run: |
+          xmake build test
+          xmake run test
 
-  build-macos:
-    name: macOS Build
+      - name: Build and Run Example Tests
+        run: |
+          xmake build -v example_tests
+          xmake run example_basic_quantities
+          xmake run example_cgs_units
+          xmake run example_derived_quantities
+          xmake run example_natural_units
+          xmake run example_quick_start
+          xmake run example_imperial_units
+          xmake run example_math_functions
+          xmake run example_unit_conversions
+          xmake run example_zero_overhead
+          xmake run example_temperature_conversions
+          xmake run example_math_functions_extended
+          xmake run example_formatting
+
+      - name: Run Compile-Fail Tests
+        run: |
+          xmake build -v fail_add_incompatible_dimensions || true
+          xmake build -v fail_implicit_narrowing || true
+          xmake build -v fail_point_plus_point || true
+          xmake build -v fail_torque_to_energy || true
+
+  build-macos-xmake:
+    name: macOS xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: macos-latest
     strategy:
       matrix:
@@ -104,11 +132,36 @@ jobs:
       - name: Build
         run: xmake build -v
 
-      - name: Run Tests
-        run: xmake test -v
+      - name: Run Static and Runtime Tests
+        run: |
+          xmake build test
+          xmake run test
 
-  build-windows:
-    name: Windows Build
+      - name: Build and Run Example Tests
+        run: |
+          xmake build -v example_tests
+          xmake run example_basic_quantities
+          xmake run example_cgs_units
+          xmake run example_derived_quantities
+          xmake run example_natural_units
+          xmake run example_quick_start
+          xmake run example_imperial_units
+          xmake run example_math_functions
+          xmake run example_unit_conversions
+          xmake run example_zero_overhead
+          xmake run example_temperature_conversions
+          xmake run example_math_functions_extended
+          xmake run example_formatting
+
+      - name: Run Compile-Fail Tests
+        run: |
+          xmake build -v fail_add_incompatible_dimensions || true
+          xmake build -v fail_implicit_narrowing || true
+          xmake build -v fail_point_plus_point || true
+          xmake build -v fail_torque_to_energy || true
+
+  build-windows-xmake:
+    name: Windows xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: windows-latest
     strategy:
       matrix:
@@ -130,9 +183,176 @@ jobs:
       - name: Build
         run: xmake build -v
 
-      - name: Run Tests
-        run: xmake test -v
+      - name: Run Static and Runtime Tests
+        run: |
+          xmake build test
+          xmake run test
 
+      - name: Build and Run Example Tests
+        run: |
+          xmake build -v example_tests
+          xmake run example_basic_quantities
+          xmake run example_cgs_units
+          xmake run example_derived_quantities
+          xmake run example_natural_units
+          xmake run example_quick_start
+          xmake run example_imperial_units
+          xmake run example_math_functions
+          xmake run example_unit_conversions
+          xmake run example_zero_overhead
+          xmake run example_temperature_conversions
+          xmake run example_math_functions_extended
+          xmake run example_formatting
+
+      - name: Run Compile-Fail Tests
+        run: |
+          xmake build -v fail_add_incompatible_dimensions; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
+          xmake build -v fail_implicit_narrowing; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
+          xmake build -v fail_point_plus_point; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
+          xmake build -v fail_torque_to_energy; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
+
+  # ============================================================================
+  # CMake Builds
+  # ============================================================================
+  build-linux-cmake:
+    name: Linux CMake (${{ matrix.compiler }}, ${{ matrix.build_type }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang ${{ env.CLANG_VERSION }}
+        if: matrix.compiler == 'clang'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-${{ env.CLANG_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.CLANG_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.CLANG_VERSION }} 255
+          clang --version
+
+      - name: Install GCC ${{ env.GCC_VERSION }}
+        if: matrix.compiler == 'gcc'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-${{ env.GCC_VERSION }} g++-${{ env.GCC_VERSION }}
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ env.GCC_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ env.GCC_VERSION }} 255
+          gcc --version
+
+      - name: Configure CMake (Clang)
+        if: matrix.compiler == 'clang'
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DUNITS_BUILD_TESTS=ON \
+            -DUNITS_ENABLE_COMPILE_FAIL_TESTS=ON
+
+      - name: Configure CMake (GCC)
+        if: matrix.compiler == 'gcc'
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DUNITS_BUILD_TESTS=ON \
+            -DUNITS_ENABLE_COMPILE_FAIL_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
+
+  build-macos-cmake:
+    name: macOS CMake (${{ matrix.compiler }}, ${{ matrix.build_type }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang ${{ env.CLANG_VERSION }}
+        if: matrix.compiler == 'clang'
+        run: |
+          brew install llvm@${{ env.CLANG_VERSION }}
+          $(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin/clang --version
+
+      - name: Install GCC ${{ env.GCC_VERSION }}
+        if: matrix.compiler == 'gcc'
+        run: |
+          brew install gcc@${{ env.GCC_VERSION }}
+          $(brew --prefix gcc@${{ env.GCC_VERSION }})/bin/gcc-${{ env.GCC_VERSION }} --version
+
+      - name: Configure CMake (Clang)
+        if: matrix.compiler == 'clang'
+        run: |
+          export PATH="$(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin:$PATH"
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_C_COMPILER=$(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin/clang \
+            -DCMAKE_CXX_COMPILER=$(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin/clang++ \
+            -DUNITS_BUILD_TESTS=ON \
+            -DUNITS_ENABLE_COMPILE_FAIL_TESTS=ON
+
+      - name: Configure CMake (GCC)
+        if: matrix.compiler == 'gcc'
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_C_COMPILER=$(brew --prefix gcc@${{ env.GCC_VERSION }})/bin/gcc-${{ env.GCC_VERSION }} \
+            -DCMAKE_CXX_COMPILER=$(brew --prefix gcc@${{ env.GCC_VERSION }})/bin/g++-${{ env.GCC_VERSION }} \
+            -DUNITS_BUILD_TESTS=ON \
+            -DUNITS_ENABLE_COMPILE_FAIL_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
+
+  build-windows-cmake:
+    name: Windows CMake (${{ matrix.compiler }}, ${{ matrix.build_type }})
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        compiler: [msvc, clang]
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake (MSVC)
+        if: matrix.compiler == 'msvc'
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" `
+            -DUNITS_BUILD_TESTS=ON `
+            -DUNITS_ENABLE_COMPILE_FAIL_TESTS=ON
+
+      - name: Configure CMake (Clang)
+        if: matrix.compiler == 'clang'
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -T ClangCL `
+            -DUNITS_BUILD_TESTS=ON `
+            -DUNITS_ENABLE_COMPILE_FAIL_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+
+      - name: Run Tests
+        run: ctest --test-dir build --build-config ${{ matrix.build_type }} --output-on-failure
+
+  # ============================================================================
+  # Linting
+  # ============================================================================
   linter:
     name: Clang-Tidy Linting
     runs-on: ubuntu-latest
@@ -167,7 +387,8 @@ jobs:
       - name: Build
         run: |
           xmake build -v
-          xmake test -v
+          xmake build test
+          xmake run test
 
       - name: Run Clang-Tidy
         run: |
