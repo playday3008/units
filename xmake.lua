@@ -287,14 +287,27 @@ task("coverage")
             table.insert(show_args, "-format=html")
             table.insert(show_args, "-output-dir=" .. html_dir)
             table.insert(show_args, "-show-line-counts-or-regions")
-            table.insert(show_args, "-ignore-filename-regex=tests/.*")
+            table.insert(show_args, "-show-instantiations=false")
+            table.insert(show_args, "-ignore-filename-regex=(_deps|catch2|Catch2)/.*")
             os.execv(llvm_cov.program, show_args)
+
+            -- Export to lcov format for Codecov compatibility
+            local export_args = {"export"}
+            for _, obj in ipairs(objects) do table.insert(export_args, obj) end
+            table.insert(export_args, "-instr-profile=" .. profdata)
+            table.insert(export_args, "-format=lcov")
+            table.insert(export_args, "-ignore-filename-regex=(_deps|catch2|Catch2)/.*")
+            table.insert(export_args, "--skip-expansions")
+            local lcov_file = path.join(abs_outputdir, "coverage.lcov")
+            local lcov_content = os.iorunv(llvm_cov.program, export_args)
+            io.writefile(lcov_file, lcov_content)
+            print("LCOV export: " .. lcov_file)
 
             -- Generate summary report
             local report_args = {"report"}
             for _, obj in ipairs(objects) do table.insert(report_args, obj) end
             table.insert(report_args, "-instr-profile=" .. profdata)
-            table.insert(report_args, "-ignore-filename-regex=tests/.*")
+            table.insert(report_args, "-ignore-filename-regex=(_deps|catch2|Catch2)/.*")
             os.execv(llvm_cov.program, report_args)
 
             print("Coverage report: " .. path.join(html_dir, "index.html"))
@@ -340,11 +353,11 @@ task("coverage")
                 "--ignore-errors", "mismatch,source"
             })
 
-            -- Remove system headers and test code
+            -- Remove system headers and external dependencies
             os.execv(lcov.program, {"--remove", coverage_info,
                 "/usr/*",
                 "*/catch2/*",
-                "*/tests/*",
+                "*/_deps/*",
                 "--output-file", coverage_info,
                 "--ignore-errors", "mismatch,source,unused"
             })

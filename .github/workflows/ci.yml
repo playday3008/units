@@ -348,6 +348,8 @@ jobs:
 
       - name: Configure and Build
         run: |
+          # Disable xmake's ccache for coverage (ccache causes wrong source paths in coverage data)
+          xmake g --ccache=n
           xmake f -m coverage --toolchain=clang -y
           xmake build tests
 
@@ -381,7 +383,12 @@ jobs:
             exit 1
           fi
 
-          llvm-cov export $TEST_OBJECTS -instr-profile="$PROFDATA" -format=lcov > build/coverage/coverage.lcov
+          llvm-cov export $TEST_OBJECTS \
+            -instr-profile="$PROFDATA" \
+            -format=lcov \
+            -ignore-filename-regex='(_deps|catch2|Catch2)/.*' \
+            --skip-expansions \
+            > build/coverage/coverage.lcov
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v4

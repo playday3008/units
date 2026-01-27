@@ -118,7 +118,6 @@ function(add_coverage_target TARGET_NAME)
                 "*/catch2/*"
                 "*/Catch2/*"
                 "*/_deps/*"
-                "*/tests/*"
                 --output-file ${COVERAGE_INFO}
                 --ignore-errors mismatch,source,unused
 
@@ -170,21 +169,22 @@ echo 'Merging profile data...'
     -output-dir='${COVERAGE_HTML}' \\
     -show-line-counts-or-regions \\
     -show-instantiations=false \\
-    -ignore-filename-regex='(tests|_deps|catch2|Catch2)/.*'
+    -ignore-filename-regex='(_deps|catch2|Catch2)/.*'
 
 # Export to lcov format for Codecov
 '${LLVM_COV_PATH}' export \\
     ${TEST_OBJECTS_STR} \\
     -instr-profile='${PROFDATA_FILE}' \\
     -format=lcov \\
-    -ignore-filename-regex='(tests|_deps|catch2|Catch2)/.*' \\
+    -ignore-filename-regex='(_deps|catch2|Catch2)/.*' \\
+    --skip-expansions \\
     > '${COVERAGE_LCOV}'
 
 # Generate summary report
 '${LLVM_COV_PATH}' report \\
     ${TEST_OBJECTS_STR} \\
     -instr-profile='${PROFDATA_FILE}' \\
-    -ignore-filename-regex='(tests|_deps|catch2|Catch2)/.*'
+    -ignore-filename-regex='(_deps|catch2|Catch2)/.*'
 
 echo 'Coverage report: ${COVERAGE_HTML}/index.html'
 echo 'LCOV export: ${COVERAGE_LCOV}'
