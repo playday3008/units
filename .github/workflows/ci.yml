@@ -76,16 +76,7 @@ jobs:
           done
 
       - name: Run Compile-Fail Tests
-        run: |
-          for file in tests/compile_fail/*.cpp; do
-            echo "Testing $(basename "$file") (should fail to compile)..."
-            # Compile directly without xmake target system to get real exit code
-            if ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }} -std=c++23 -fsyntax-only -Iinclude "$file" 2>/dev/null; then
-              echo "ERROR: $file should have failed to compile!"
-              exit 1
-            fi
-            echo "OK: $(basename "$file") correctly failed to compile"
-          done
+        run: xmake build compile_fail_tests
 
   build-macos-xmake:
     name: macOS xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
@@ -146,21 +137,7 @@ jobs:
           done
 
       - name: Run Compile-Fail Tests
-        run: |
-          if [ "${{ matrix.compiler }}" = "clang" ]; then
-            CXX="$(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin/clang++"
-          else
-            CXX="$(brew --prefix gcc@${{ env.GCC_VERSION }})/bin/g++-${{ env.GCC_VERSION }}"
-          fi
-          for file in tests/compile_fail/*.cpp; do
-            echo "Testing $(basename "$file") (should fail to compile)..."
-            # Compile directly without xmake target system to get real exit code
-            if $CXX -std=c++23 -fsyntax-only -Iinclude "$file" 2>/dev/null; then
-              echo "ERROR: $file should have failed to compile!"
-              exit 1
-            fi
-            echo "OK: $(basename "$file") correctly failed to compile"
-          done
+        run: xmake build compile_fail_tests
 
   build-windows-xmake:
     name: Windows xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
@@ -201,21 +178,7 @@ jobs:
           }
 
       - name: Run Compile-Fail Tests
-        run: |
-          foreach ($file in Get-ChildItem -Path "tests/compile_fail/*.cpp") {
-            Write-Host "Testing $($file.Name) (should fail to compile)..."
-            # Compile directly without xmake target system to get real exit code
-            if ("${{ matrix.compiler }}" -eq "msvc") {
-              cl /std:c++latest /Zs /I include $file.FullName 2>$null
-            } else {
-              clang++ -std=c++23 -fsyntax-only -I include $file.FullName 2>$null
-            }
-            if ($LASTEXITCODE -eq 0) {
-              Write-Host "ERROR: $($file.Name) should have failed to compile!"
-              exit 1
-            }
-            Write-Host "OK: $($file.Name) correctly failed to compile"
-          }
+        run: xmake build compile_fail_tests
 
   # ============================================================================
   # CMake Builds

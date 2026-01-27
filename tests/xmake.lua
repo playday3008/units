@@ -97,6 +97,17 @@ if has_config("compile_fail_tests") then
             set_group("tests/compile_fail")
         target_end()
     end
+
+    -- Convenience target to build all compile-fail tests
+    target("compile_fail_tests")
+        set_kind("phony")
+        set_default(false)
+        for _, file in ipairs(os.files("compile_fail/*.cpp")) do
+            local name = "fail_" .. path.basename(file)
+            add_deps(name)
+        end
+        set_group("tests/compile_fail")
+    target_end()
 end
 
 -- Example tests - demonstrates API usage and verifies README examples compile
