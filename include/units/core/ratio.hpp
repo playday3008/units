@@ -54,12 +54,26 @@ namespace units {
     template<>
     struct ratio_limits<__int128> {
         static constexpr auto max() noexcept -> __int128 {
-          return std::numeric_limits<__int128>::max();
+          // Can't use (1 << 127) - 1 directly: 2^127 overflows signed __int128
+          // Instead: 2^127 - 1 = 2^126 + 2^126 - 1 = 2^126 + (2^126 - 1)
+          constexpr auto half = static_cast<__int128>(1) << 126; // NOLINT(hicpp-signed-bitwise)
+          return half + (half - 1);
         }
         static constexpr auto min() noexcept -> __int128 {
-          return std::numeric_limits<__int128>::min();
+          // -2^127 = -max - 1
+          return -max() - 1;
         }
     };
+
+    // Verify our manual computation matches std::numeric_limits when available
+    static_assert(!std::numeric_limits<__int128>::is_specialized
+                      || std::numeric_limits<__int128>::max() == 0 // MSVC STL returns 0
+                      || ratio_limits<__int128>::max() == std::numeric_limits<__int128>::max(),
+                  "__int128 max mismatch");
+    static_assert(!std::numeric_limits<__int128>::is_specialized
+                      || std::numeric_limits<__int128>::min() == 0 // MSVC STL returns 0
+                      || ratio_limits<__int128>::min() == std::numeric_limits<__int128>::min(),
+                  "__int128 min mismatch");
 #  pragma GCC diagnostic pop
 #endif
 
