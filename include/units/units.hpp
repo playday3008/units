@@ -77,13 +77,17 @@
 // Optional: Bring SI literals into a convenient namespace
 // =============================================================================
 
-/// Inline namespace for convenient access to SI literals.
+/// Inline namespace for convenient access to all unit system literals.
 /// Usage:
 /// @code
 /// using namespace units::literals;
-/// auto d = 5_m;
+/// auto d = 5_m;      // SI
+/// auto e = 100_erg;  // CGS
+/// auto l = 10_ft;    // Imperial
 /// @endcode
 namespace units::inline literals {
   using namespace si::literals;
   using namespace natural::literals;
+  using namespace cgs::literals;
+  using namespace imperial::literals;
 } // namespace units::inline literals

@@ -175,14 +175,4 @@ namespace units {
     return conversion_factor<get_unit<FromRef>, get_unit<ToRef>, T>();
   }
 
-  // =============================================================================
-  // Static assertions
-  // =============================================================================
-
-  // Verify reference type trait works
-  template<typename Q, typename U>
-  struct test_reference_is_reference {
-      static_assert(is_reference_v<reference<Q, U>>);
-  };
-
 } // namespace units

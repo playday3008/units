@@ -243,15 +243,19 @@ namespace units {
 
   /// Raise a quantity to an integer power
   /// pow<2>(5_m) == 25_m²
+  /// pow<0>(5_m) returns dimensionless quantity with value 1
+  /// pow<-1>(5_m) returns quantity with inverse unit
   template<std::intmax_t N, Reference Ref, typename Rep>
   [[nodiscard]]
   constexpr auto pow(const quantity<Ref, Rep> &q) noexcept {
     using unit = get_unit<Ref>;
     using spec = get_quantity_spec<Ref>;
 
-    // For N=0, return dimensionless 1
+    // For N=0, return dimensionless quantity with value 1
     if constexpr (N == 0) {
-      return Rep { 1 };
+      using new_unit = detail::powered_unit<unit, 0>;
+      using new_ref  = reference<spec, new_unit>;
+      return quantity<new_ref, Rep> { Rep { 1 } };
     }
     // For N=1, return the same quantity
     else if constexpr (N == 1) {
@@ -261,9 +265,11 @@ namespace units {
     else if constexpr (N == 2) {
       return q * q;
     }
-    // For N=-1, return 1/q
+    // For N=-1, return 1/q with proper inverse unit
     else if constexpr (N == -1) {
-      return Rep { 1 } / q.value(); // Returns scalar - type system limitation
+      using new_unit = detail::powered_unit<unit, -1>;
+      using new_ref  = reference<spec, new_unit>;
+      return quantity<new_ref, Rep> { Rep { 1 } / q.value() };
     }
     // General case (N >= 3 or N <= -2)
     // Note: Unit powers are correctly computed, but quantity_spec is preserved
@@ -330,6 +336,7 @@ namespace units {
 
   /// Cube root of a quantity
   /// cbrt(27_m3) == 3_m
+  /// cbrt(-8_m3) == -2_m (negative inputs are valid for cube root)
   /// Only valid when all dimension powers are divisible by 3
   template<Reference Ref, typename Rep>
     requires detail::is_cbrt_compatible<get_unit<Ref>>::value
@@ -347,6 +354,12 @@ namespace units {
         return quantity<new_ref, Rep> { Rep { 0 } };
       }
 
+      // Handle negative inputs: cbrt(-x) = -cbrt(x)
+      bool is_negative = x < Rep { 0 };
+      if (is_negative) {
+        x = -x;
+      }
+
       Rep guess = x;
       for (int i = 0; i < 50; ++i) {
         Rep next = (Rep { 2 } * guess + x / (guess * guess)) / Rep { 3 };
@@ -355,7 +368,8 @@ namespace units {
         }
         guess = next;
       }
-      return quantity<new_ref, Rep> { guess };
+
+      return quantity<new_ref, Rep> { is_negative ? -guess : guess };
     }
     else {
       return quantity<new_ref, Rep> { std::cbrt(q.value()) };
@@ -378,6 +392,36 @@ namespace units {
 
   } // namespace detail
 
+  namespace detail {
+
+    /// Compile-time fmod implementation for angle normalization
+    template<typename Rep>
+    constexpr auto ct_fmod(Rep x, Rep y) noexcept -> Rep {
+      auto quot = static_cast<std::int64_t>(x / y);
+      return x - static_cast<Rep>(quot) * y;
+    }
+
+    /// Normalize angle to [-pi, pi] range efficiently
+    template<typename Rep>
+    constexpr auto normalize_angle(Rep x) noexcept -> Rep {
+      constexpr Rep pi     = Rep { std::numbers::pi };
+      constexpr Rep two_pi = Rep { 2 } * pi;
+
+      // Use fmod-style reduction for efficiency (avoids potential infinite loop)
+      x = ct_fmod(x, two_pi);
+
+      // Adjust to [-pi, pi]
+      if (x > pi) {
+        x -= two_pi;
+      }
+      else if (x < -pi) {
+        x += two_pi;
+      }
+      return x;
+    }
+
+  } // namespace detail
+
   /// Sine of an angle (assumes input is in radians)
   /// Returns a dimensionless value
   template<Reference Ref, typename Rep>
@@ -386,16 +430,7 @@ namespace units {
   constexpr auto sin(const quantity<Ref, Rep> &angle) noexcept -> Rep {
     if consteval {
       // Taylor series for sin at compile time
-      Rep x = angle.value();
-      // Normalize to [-pi, pi] range (approximate)
-      constexpr Rep pi     = Rep { std::numbers::pi };
-      constexpr Rep two_pi = Rep { 2 } * pi;
-      while (x > pi) {
-        x -= two_pi;
-      }
-      while (x < -pi) {
-        x += two_pi;
-      }
+      Rep x = detail::normalize_angle(angle.value());
 
       Rep result = x;
       Rep term   = x;
@@ -418,16 +453,7 @@ namespace units {
   constexpr auto cos(const quantity<Ref, Rep> &angle) noexcept -> Rep {
     if consteval {
       // Taylor series for cos at compile time
-      Rep x = angle.value();
-      // Normalize to [-pi, pi] range (approximate)
-      constexpr Rep pi     = Rep { std::numbers::pi };
-      constexpr Rep two_pi = Rep { 2 } * pi;
-      while (x > pi) {
-        x -= two_pi;
-      }
-      while (x < -pi) {
-        x += two_pi;
-      }
+      Rep x = detail::normalize_angle(angle.value());
 
       Rep result = Rep { 1 };
       Rep term   = Rep { 1 };

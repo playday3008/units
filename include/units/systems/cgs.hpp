@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <units/core/quantity.hpp>
 #include <units/core/quantity_spec.hpp>
 #include <units/core/unit.hpp>
 #include <units/systems/isq/base.hpp>
@@ -305,5 +306,145 @@ namespace units::cgs {
   static_assert(centistokes_t::magnitude_type::den == 100'0000);
   static_assert(milligal_t::magnitude_type::num == 1);
   static_assert(milligal_t::magnitude_type::den == 10'0000);
+
+  // =============================================================================
+  // User-defined literals
+  // =============================================================================
+
+  namespace literals {
+
+    // -----------------------------------------------------------------------------
+    // Force literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for dynes (integer)
+    [[nodiscard]]
+    consteval auto operator""_dyn(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), dyne);
+    }
+
+    /// User-defined literal for dynes (floating point)
+    [[nodiscard]]
+    consteval auto operator""_dyn(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), dyne);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Energy literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for ergs (integer)
+    [[nodiscard]]
+    consteval auto operator""_erg(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), erg);
+    }
+
+    /// User-defined literal for ergs (floating point)
+    [[nodiscard]]
+    consteval auto operator""_erg(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), erg);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Pressure literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for baryes (integer)
+    [[nodiscard]]
+    consteval auto operator""_Ba(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), barye);
+    }
+
+    /// User-defined literal for baryes (floating point)
+    [[nodiscard]]
+    consteval auto operator""_Ba(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), barye);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Viscosity literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for poise (integer)
+    [[nodiscard]]
+    consteval auto operator""_P(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), poise);
+    }
+
+    /// User-defined literal for poise (floating point)
+    [[nodiscard]]
+    consteval auto operator""_P(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), poise);
+    }
+
+    /// User-defined literal for centipoise (integer)
+    [[nodiscard]]
+    consteval auto operator""_cP(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), centipoise);
+    }
+
+    /// User-defined literal for centipoise (floating point)
+    [[nodiscard]]
+    consteval auto operator""_cP(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), centipoise);
+    }
+
+    /// User-defined literal for stokes (integer)
+    [[nodiscard]]
+    consteval auto operator""_St(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), stokes);
+    }
+
+    /// User-defined literal for stokes (floating point)
+    [[nodiscard]]
+    consteval auto operator""_St(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), stokes);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Acceleration literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for gal (integer)
+    [[nodiscard]]
+    consteval auto operator""_Gal(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), gal);
+    }
+
+    /// User-defined literal for gal (floating point)
+    [[nodiscard]]
+    consteval auto operator""_Gal(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), gal);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Electromagnetic literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for gauss (integer)
+    [[nodiscard]]
+    consteval auto operator""_gauss(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), gauss);
+    }
+
+    /// User-defined literal for gauss (floating point)
+    [[nodiscard]]
+    consteval auto operator""_gauss(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), gauss);
+    }
+
+    /// User-defined literal for maxwell (integer)
+    [[nodiscard]]
+    consteval auto operator""_Mx(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), maxwell);
+    }
+
+    /// User-defined literal for maxwell (floating point)
+    [[nodiscard]]
+    consteval auto operator""_Mx(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), maxwell);
+    }
+
+  } // namespace literals
 
 } // namespace units::cgs

@@ -428,7 +428,7 @@ task("lint")
 includes("@builtin/xpack")
 
 xpack("units")
-    --set_homepage("https://github.com/...") -- TODO: Update homepage URL
+    set_homepage("https://github.com/playday3008/units")
     set_description("C++23 compile-time physical quantities and units library")
     set_license("MIT")
     set_formats("srczip", "srctargz")

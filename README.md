@@ -50,7 +50,7 @@ Or use `xmake package` to create a distributable archive.
 include(FetchContent)
 FetchContent_Declare(
     units
-    GIT_REPOSITORY https://github.com/... # TODO
+    GIT_REPOSITORY https://github.com/playday3008/units
     GIT_TAG main
 )
 FetchContent_MakeAvailable(units)
@@ -140,7 +140,7 @@ include/units/
 
 ### Running Tests
 
-Static tests use compile-time `static_assert`. If it compiles, it passes.
+**Static tests** use compile-time `static_assert`. If it compiles, it passes.
 
 ```bash
 xmake build static_tests       # Build static assertion tests
@@ -148,6 +148,38 @@ xmake run static_tests         # Run static tests
 xmake build example_tests      # Build API example tests
 xmake run example_basic_quantities  # Run specific example
 ```
+
+**Runtime tests** use Catch2 for testing conversions, formatting, and math functions.
+
+```bash
+xmake build runtime_tests                    # Build all runtime tests
+xmake run runtime_conversion_precision_test  # Unit conversion precision
+xmake run runtime_affine_quantity_test       # Temperature conversions
+xmake run runtime_format_test                # std::format output
+xmake run runtime_math_test                  # Math functions
+```
+
+**Compile-fail tests** verify that invalid operations produce compile errors.
+
+```bash
+xmake build compile_fail_tests  # Build compile-fail tests
+```
+
+**Compile-time benchmark** measures compilation overhead.
+
+```bash
+xmake build compile_time_benchmark
+time clang++ -std=c++23 -ftime-report -c tests/benchmark/compile_time_benchmark.cpp
+```
+
+### Code Coverage
+
+```bash
+xmake coverage             # Build with coverage, run tests, generate HTML report
+xmake coverage -o report   # Custom output directory
+```
+
+Requires: `lcov` and `genhtml` (GCC), or `llvm-cov` and `llvm-profdata` (Clang).
 
 ### Code Quality
 
@@ -164,7 +196,7 @@ docker-compose run --rm dev
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Acknowledgments
 

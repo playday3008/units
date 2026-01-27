@@ -126,8 +126,13 @@ namespace units::test {
   // pow<1> - identity
   static_assert(pow<1>(5.0_m).value() == 5.0);
 
-  // pow<0> - returns 1
-  static_assert(pow<0>(5.0_m) == 1.0);
+  // pow<0> - returns dimensionless quantity with value 1
+  static_assert(pow<0>(5.0_m).value() == 1.0);
+  static_assert(pow<0>(3.14_s).value() == 1.0);
+
+  // pow<-1> - returns inverse quantity
+  static_assert(pow<-1>(2.0_m).value() == 0.5);
+  static_assert(pow<-1>(5.0_s).value() == 0.2);
 
   // =============================================================================
   // Trigonometric function tests
@@ -156,6 +161,22 @@ namespace units::test {
   static_assert(approx(tan(operator""_rad(std::numbers::pi_v<long double> / 4)),
                        1.0,
                        1e-5)); // tan(pi/4) ~ 1
+
+  // Large angle normalization tests
+  // sin(2*pi + pi/2) = sin(pi/2) = 1
+  static_assert(approx(sin(operator""_rad((2.0L * std::numbers::pi_v<long double>)
+                                          + (std::numbers::pi_v<long double> / 2))),
+                       1.0,
+                       1e-5));
+
+  // cos(4*pi) = cos(0) = 1
+  static_assert(approx(cos(operator""_rad(4.0L * std::numbers::pi_v<long double>)), 1.0, 1e-5));
+
+  // sin(-4*pi + pi/2) = sin(pi/2) = 1
+  static_assert(approx(sin(operator""_rad((-4.0L * std::numbers::pi_v<long double>)
+                                          + (std::numbers::pi_v<long double> / 2))),
+                       1.0,
+                       1e-5));
 
   // =============================================================================
   // Inverse trig function tests (raw values) - relaxed tolerances

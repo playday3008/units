@@ -23,99 +23,43 @@ namespace units::si {
   // Large prefixes (multipliers)
   // =============================================================================
 
-  /// quetta - 10^30 (approximated, exceeds std::intmax_t range)
-  /// Symbol: Q
-  struct prefix_quetta {
-      // Cannot represent 10^30 exactly in intmax_t
-      // Use largest representable power of 10 as approximation
-      using ratio                         = ::units::ratio<100'0000'0000'0000'0000, 1>; // 10^18
-      static constexpr long double factor = 1e30L;
-  };
-
-  /// ronna - 10^27 (approximated, exceeds std::intmax_t range)
-  /// Symbol: R
-  struct prefix_ronna {
-      using ratio                         = ::units::ratio<100'0000'0000'0000'0000, 1>; // 10^18
-      static constexpr long double factor = 1e27L;
-  };
-
-  /// yotta - 10^24 (approximated, exceeds std::intmax_t range)
-  /// Symbol: Y
-  struct prefix_yotta {
-      using ratio                         = ::units::ratio<100'0000'0000'0000'0000, 1>; // 10^18
-      static constexpr long double factor = 1e24L;
-  };
-
-  /// zetta - 10^21 (approximated, exceeds std::intmax_t range)
-  /// Symbol: Z
-  struct prefix_zetta {
-      using ratio                         = ::units::ratio<100'0000'0000'0000'0000, 1>; // 10^18
-      static constexpr long double factor = 1e21L;
-  };
+  // Note: For prefixes within the range of __int128 (or std::intmax_t), the ratio
+  // representation is exact. For extreme prefixes (quetta through zetta, and
+  // zepto through quecto), the ratio is clamped to the maximum representable
+  // power of 10 when __int128 is not available. Use ::units::quetta etc. from
+  // ratio.hpp for proper __int128 support.
 
   /// exa - 10^18
   /// Symbol: E
-  struct prefix_exa {
-      using ratio                         = ::units::ratio<100'0000'0000'0000'0000, 1>;
-      static constexpr long double factor = 1e18L;
-  };
-  using exa = prefix_exa::ratio;
+  using exa = ::units::exa;
 
   /// peta - 10^15
   /// Symbol: P
-  struct prefix_peta {
-      using ratio                         = ::units::ratio<1000'0000'0000'0000, 1>;
-      static constexpr long double factor = 1e15L;
-  };
-  using peta = prefix_peta::ratio;
+  using peta = ::units::peta;
 
   /// tera - 10^12
   /// Symbol: T
-  struct prefix_tera {
-      using ratio                         = ::units::ratio<1'0000'0000'0000, 1>;
-      static constexpr long double factor = 1e12L;
-  };
-  using tera = prefix_tera::ratio;
+  using tera = ::units::tera;
 
   /// giga - 10^9
   /// Symbol: G
-  struct prefix_giga {
-      using ratio                         = ::units::ratio<10'0000'0000, 1>;
-      static constexpr long double factor = 1e9L;
-  };
-  using giga = prefix_giga::ratio;
+  using giga = ::units::giga;
 
   /// mega - 10^6
   /// Symbol: M
-  struct prefix_mega {
-      using ratio                         = ::units::ratio<100'0000, 1>;
-      static constexpr long double factor = 1e6L;
-  };
-  using mega = prefix_mega::ratio;
+  using mega = ::units::mega;
 
   /// kilo - 10^3
   /// Symbol: k
-  struct prefix_kilo {
-      using ratio                         = ::units::ratio<1000, 1>;
-      static constexpr long double factor = 1e3L;
-  };
-  using kilo = prefix_kilo::ratio;
+  using kilo = ::units::kilo;
 
   /// hecto - 10^2
   /// Symbol: h
-  struct prefix_hecto {
-      using ratio                         = ::units::ratio<100, 1>;
-      static constexpr long double factor = 1e2L;
-  };
-  using hecto = prefix_hecto::ratio;
+  using hecto = ::units::hecto;
 
   /// deca - 10^1
   /// Symbol: da
-  struct prefix_deca {
-      using ratio                         = ::units::ratio<10, 1>;
-      static constexpr long double factor = 1e1L;
-  };
-  using deca = prefix_deca::ratio;
+  using deca = ::units::deca;
 
   // =============================================================================
   // Small prefixes (submultiples)
@@ -123,95 +67,35 @@ namespace units::si {
 
   /// deci - 10^-1
   /// Symbol: d
-  struct prefix_deci {
-      using ratio                         = ::units::ratio<1, 10>;
-      static constexpr long double factor = 1e-1L;
-  };
-  using deci = prefix_deci::ratio;
+  using deci = ::units::deci;
 
   /// centi - 10^-2
   /// Symbol: c
-  struct prefix_centi {
-      using ratio                         = ::units::ratio<1, 100>;
-      static constexpr long double factor = 1e-2L;
-  };
-  using centi = prefix_centi::ratio;
+  using centi = ::units::centi;
 
   /// milli - 10^-3
   /// Symbol: m
-  struct prefix_milli {
-      using ratio                         = ::units::ratio<1, 1000>;
-      static constexpr long double factor = 1e-3L;
-  };
-  using milli = prefix_milli::ratio;
+  using milli = ::units::milli;
 
   /// micro - 10^-6
   /// Symbol: μ (or u in ASCII)
-  struct prefix_micro {
-      using ratio                         = ::units::ratio<1, 100'0000>;
-      static constexpr long double factor = 1e-6L;
-  };
-  using micro = prefix_micro::ratio;
+  using micro = ::units::micro;
 
   /// nano - 10^-9
   /// Symbol: n
-  struct prefix_nano {
-      using ratio                         = ::units::ratio<1, 10'0000'0000>;
-      static constexpr long double factor = 1e-9L;
-  };
-  using nano = prefix_nano::ratio;
+  using nano = ::units::nano;
 
   /// pico - 10^-12
   /// Symbol: p
-  struct prefix_pico {
-      using ratio                         = ::units::ratio<1, 1'0000'0000'0000>;
-      static constexpr long double factor = 1e-12L;
-  };
-  using pico = prefix_pico::ratio;
+  using pico = ::units::pico;
 
   /// femto - 10^-15
   /// Symbol: f
-  struct prefix_femto {
-      using ratio                         = ::units::ratio<1, 1000'0000'0000'0000>;
-      static constexpr long double factor = 1e-15L;
-  };
-  using femto = prefix_femto::ratio;
+  using femto = ::units::femto;
 
   /// atto - 10^-18
   /// Symbol: a
-  struct prefix_atto {
-      using ratio                         = ::units::ratio<1, 100'0000'0000'0000'0000>;
-      static constexpr long double factor = 1e-18L;
-  };
-  using atto = prefix_atto::ratio;
-
-  /// zepto - 10^-21 (approximated, exceeds std::intmax_t range)
-  /// Symbol: z
-  struct prefix_zepto {
-      using ratio                         = ::units::ratio<1, 100'0000'0000'0000'0000>; // 10^-18
-      static constexpr long double factor = 1e-21L;
-  };
-
-  /// yocto - 10^-24 (approximated, exceeds std::intmax_t range)
-  /// Symbol: y
-  struct prefix_yocto {
-      using ratio                         = ::units::ratio<1, 100'0000'0000'0000'0000>; // 10^-18
-      static constexpr long double factor = 1e-24L;
-  };
-
-  /// ronto - 10^-27 (approximated, exceeds std::intmax_t range)
-  /// Symbol: r
-  struct prefix_ronto {
-      using ratio                         = ::units::ratio<1, 100'0000'0000'0000'0000>; // 10^-18
-      static constexpr long double factor = 1e-27L;
-  };
-
-  /// quecto - 10^-30 (approximated, exceeds std::intmax_t range)
-  /// Symbol: q
-  struct prefix_quecto {
-      using ratio                         = ::units::ratio<1, 100'0000'0000'0000'0000>; // 10^-18
-      static constexpr long double factor = 1e-30L;
-  };
+  using atto = ::units::atto;
 
   // =============================================================================
   // Common prefixed units for length (metre)

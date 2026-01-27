@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <units/core/quantity.hpp>
 #include <units/core/quantity_spec.hpp>
 #include <units/core/unit.hpp>
 #include <units/systems/isq/base.hpp>
@@ -554,5 +555,189 @@ namespace units::imperial {
   static_assert(mile_t::symbol == fixed_string { "mi" });
   static_assert(pound_t::symbol == fixed_string { "lb" });
   static_assert(ounce_t::symbol == fixed_string { "oz" });
+
+  // =============================================================================
+  // User-defined literals
+  // =============================================================================
+
+  namespace literals {
+
+    // -----------------------------------------------------------------------------
+    // Length literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for inches (integer)
+    [[nodiscard]]
+    consteval auto operator""_in(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), inch);
+    }
+
+    /// User-defined literal for inches (floating point)
+    [[nodiscard]]
+    consteval auto operator""_in(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), inch);
+    }
+
+    /// User-defined literal for feet (integer)
+    [[nodiscard]]
+    consteval auto operator""_ft(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), foot);
+    }
+
+    /// User-defined literal for feet (floating point)
+    [[nodiscard]]
+    consteval auto operator""_ft(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), foot);
+    }
+
+    /// User-defined literal for yards (integer)
+    [[nodiscard]]
+    consteval auto operator""_yd(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), yard);
+    }
+
+    /// User-defined literal for yards (floating point)
+    [[nodiscard]]
+    consteval auto operator""_yd(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), yard);
+    }
+
+    /// User-defined literal for miles (integer)
+    [[nodiscard]]
+    consteval auto operator""_mi(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), mile);
+    }
+
+    /// User-defined literal for miles (floating point)
+    [[nodiscard]]
+    consteval auto operator""_mi(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), mile);
+    }
+
+    /// User-defined literal for nautical miles (integer)
+    [[nodiscard]]
+    consteval auto operator""_nmi(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), nautical_mile);
+    }
+
+    /// User-defined literal for nautical miles (floating point)
+    [[nodiscard]]
+    consteval auto operator""_nmi(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), nautical_mile);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Mass literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for ounces (integer)
+    [[nodiscard]]
+    consteval auto operator""_oz(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), ounce);
+    }
+
+    /// User-defined literal for ounces (floating point)
+    [[nodiscard]]
+    consteval auto operator""_oz(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), ounce);
+    }
+
+    /// User-defined literal for pounds (integer)
+    [[nodiscard]]
+    consteval auto operator""_lb(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), pound);
+    }
+
+    /// User-defined literal for pounds (floating point)
+    [[nodiscard]]
+    consteval auto operator""_lb(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), pound);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Speed literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for miles per hour (integer)
+    [[nodiscard]]
+    consteval auto operator""_mph(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), mile_per_hour);
+    }
+
+    /// User-defined literal for miles per hour (floating point)
+    [[nodiscard]]
+    consteval auto operator""_mph(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), mile_per_hour);
+    }
+
+    /// User-defined literal for knots (integer)
+    [[nodiscard]]
+    consteval auto operator""_kn(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), knot);
+    }
+
+    /// User-defined literal for knots (floating point)
+    [[nodiscard]]
+    consteval auto operator""_kn(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), knot);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Force and pressure literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for pound-force (integer)
+    [[nodiscard]]
+    consteval auto operator""_lbf(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), pound_force);
+    }
+
+    /// User-defined literal for pound-force (floating point)
+    [[nodiscard]]
+    consteval auto operator""_lbf(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), pound_force);
+    }
+
+    /// User-defined literal for psi (integer)
+    [[nodiscard]]
+    consteval auto operator""_psi(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), psi);
+    }
+
+    /// User-defined literal for psi (floating point)
+    [[nodiscard]]
+    consteval auto operator""_psi(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), psi);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Energy and power literals
+    // -----------------------------------------------------------------------------
+
+    /// User-defined literal for BTU (integer)
+    [[nodiscard]]
+    consteval auto operator""_BTU(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), btu);
+    }
+
+    /// User-defined literal for BTU (floating point)
+    [[nodiscard]]
+    consteval auto operator""_BTU(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), btu);
+    }
+
+    /// User-defined literal for horsepower (integer)
+    [[nodiscard]]
+    consteval auto operator""_hp(unsigned long long val) noexcept {
+      return make_quantity(static_cast<double>(val), horsepower);
+    }
+
+    /// User-defined literal for horsepower (floating point)
+    [[nodiscard]]
+    consteval auto operator""_hp(long double val) noexcept {
+      return make_quantity(static_cast<double>(val), horsepower);
+    }
+
+  } // namespace literals
 
 } // namespace units::imperial

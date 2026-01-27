@@ -528,10 +528,25 @@ namespace units {
   using zetta  = ratio<detail::power_of_10_v<21>, 1>; // 10^21
 #else
   // Without __int128, clamp to max representable (10^18)
-  using quetta = ratio<detail::power_of_10_v<18>, 1>; // Clamped from 10^30
-  using ronna  = ratio<detail::power_of_10_v<18>, 1>; // Clamped from 10^27
-  using yotta  = ratio<detail::power_of_10_v<18>, 1>; // Clamped from 10^24
-  using zetta  = ratio<detail::power_of_10_v<18>, 1>; // Clamped from 10^21
+  // These are marked deprecated to warn users about the limitation
+  namespace detail {
+    struct
+        [[deprecated("quetta (10^30) clamped to 10^18 - use compiler with __int128")]] quetta_clamped
+        : ratio<power_of_10_v<18>, 1> {};
+    struct
+        [[deprecated("ronna (10^27) clamped to 10^18 - use compiler with __int128")]] ronna_clamped
+        : ratio<power_of_10_v<18>, 1> {};
+    struct
+        [[deprecated("yotta (10^24) clamped to 10^18 - use compiler with __int128")]] yotta_clamped
+        : ratio<power_of_10_v<18>, 1> {};
+    struct
+        [[deprecated("zetta (10^21) clamped to 10^18 - use compiler with __int128")]] zetta_clamped
+        : ratio<power_of_10_v<18>, 1> {};
+  } // namespace detail
+  using quetta = detail::quetta_clamped;
+  using ronna  = detail::ronna_clamped;
+  using yotta  = detail::yotta_clamped;
+  using zetta  = detail::zetta_clamped;
 #endif
   using exa   = ratio<detail::power_of_10_v<18>, 1>; // 10^18
   using peta  = ratio<detail::power_of_10_v<15>, 1>; // 10^15
@@ -562,10 +577,24 @@ namespace units {
   using quecto = ratio<1, detail::power_of_10_v<30>>; // 10^-30
 #else
   // Without __int128, clamp to max representable (10^-18)
-  using zepto  = ratio<1, detail::power_of_10_v<18>>; // Clamped from 10^-21
-  using yocto  = ratio<1, detail::power_of_10_v<18>>; // Clamped from 10^-24
-  using ronto  = ratio<1, detail::power_of_10_v<18>>; // Clamped from 10^-27
-  using quecto = ratio<1, detail::power_of_10_v<18>>; // Clamped from 10^-30
+  // These are marked deprecated to warn users about the limitation
+  namespace detail {
+    struct
+        [[deprecated("zepto (10^-21) clamped to 10^-18 - use compiler with __int128")]] zepto_clamped
+        : ratio<1, power_of_10_v<18>> {};
+    struct
+        [[deprecated("yocto (10^-24) clamped to 10^-18 - use compiler with __int128")]] yocto_clamped
+        : ratio<1, power_of_10_v<18>> {};
+    struct
+        [[deprecated("ronto (10^-27) clamped to 10^-18 - use compiler with __int128")]] ronto_clamped
+        : ratio<1, power_of_10_v<18>> {};
+    struct [[deprecated("quecto (10^-30) clamped to 10^-18 - use compiler with __int128")]]
+    quecto_clamped : ratio<1, power_of_10_v<18>> {};
+  } // namespace detail
+  using zepto  = detail::zepto_clamped;
+  using yocto  = detail::yocto_clamped;
+  using ronto  = detail::ronto_clamped;
+  using quecto = detail::quecto_clamped;
 #endif
 
 } // namespace units
