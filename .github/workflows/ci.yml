@@ -78,13 +78,13 @@ jobs:
       - name: Run Compile-Fail Tests
         run: |
           for file in tests/compile_fail/*.cpp; do
-            name="fail_$(basename "${file%.cpp}")"
-            echo "Testing $name (should fail to compile)..."
-            if xmake build -v "$name" 2>/dev/null; then
-              echo "ERROR: $name should have failed to compile!"
+            echo "Testing $(basename "$file") (should fail to compile)..."
+            # Compile directly without xmake target system to get real exit code
+            if ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }} -std=c++23 -fsyntax-only -Iinclude "$file" 2>/dev/null; then
+              echo "ERROR: $file should have failed to compile!"
               exit 1
             fi
-            echo "OK: $name correctly failed to compile"
+            echo "OK: $(basename "$file") correctly failed to compile"
           done
 
   build-macos-xmake:
@@ -147,14 +147,19 @@ jobs:
 
       - name: Run Compile-Fail Tests
         run: |
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            CXX="$(brew --prefix llvm@${{ env.CLANG_VERSION }})/bin/clang++"
+          else
+            CXX="$(brew --prefix gcc@${{ env.GCC_VERSION }})/bin/g++-${{ env.GCC_VERSION }}"
+          fi
           for file in tests/compile_fail/*.cpp; do
-            name="fail_$(basename "${file%.cpp}")"
-            echo "Testing $name (should fail to compile)..."
-            if xmake build -v "$name" 2>/dev/null; then
-              echo "ERROR: $name should have failed to compile!"
+            echo "Testing $(basename "$file") (should fail to compile)..."
+            # Compile directly without xmake target system to get real exit code
+            if $CXX -std=c++23 -fsyntax-only -Iinclude "$file" 2>/dev/null; then
+              echo "ERROR: $file should have failed to compile!"
               exit 1
             fi
-            echo "OK: $name correctly failed to compile"
+            echo "OK: $(basename "$file") correctly failed to compile"
           done
 
   build-windows-xmake:
@@ -198,14 +203,18 @@ jobs:
       - name: Run Compile-Fail Tests
         run: |
           foreach ($file in Get-ChildItem -Path "tests/compile_fail/*.cpp") {
-            $name = "fail_" + $file.BaseName
-            Write-Host "Testing $name (should fail to compile)..."
-            xmake build -v $name 2>$null
+            Write-Host "Testing $($file.Name) (should fail to compile)..."
+            # Compile directly without xmake target system to get real exit code
+            if ("${{ matrix.compiler }}" -eq "msvc") {
+              cl /std:c++latest /Zs /I include $file.FullName 2>$null
+            } else {
+              clang++ -std=c++23 -fsyntax-only -I include $file.FullName 2>$null
+            }
             if ($LASTEXITCODE -eq 0) {
-              Write-Host "ERROR: $name should have failed to compile!"
+              Write-Host "ERROR: $($file.Name) should have failed to compile!"
               exit 1
             }
-            Write-Host "OK: $name correctly failed to compile"
+            Write-Host "OK: $($file.Name) correctly failed to compile"
           }
 
   # ============================================================================
@@ -348,10 +357,10 @@ jobs:
         run: ctest --test-dir build --build-config ${{ matrix.build_type }} --output-on-failure
 
   # ============================================================================
-  # Code Coverage
+  # Code Coverage (xmake)
   # ============================================================================
-  coverage:
-    name: Code Coverage
+  coverage-xmake:
+    name: Code Coverage (xmake)
     runs-on: ubuntu-latest
 
     steps:
@@ -377,7 +386,7 @@ jobs:
       - name: Configure and Build
         run: |
           xmake f -m coverage --toolchain=clang -y
-          xmake build runtime_tests static_tests
+          xmake build tests
 
       - name: Generate Coverage Report
         run: xmake coverage
@@ -421,7 +430,59 @@ jobs:
       - name: Upload Coverage HTML Report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-report-xmake
+          path: build/coverage/html/
+          retention-days: 30
+
+  # ============================================================================
+  # Code Coverage (CMake)
+  # ============================================================================
+  coverage-cmake:
+    name: Code Coverage (CMake)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang ${{ env.CLANG_VERSION }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-${{ env.CLANG_VERSION }} llvm-${{ env.CLANG_VERSION }}
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${{ env.CLANG_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${{ env.CLANG_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/llvm-cov llvm-cov /usr/bin/llvm-cov-${{ env.CLANG_VERSION }} 255
+          sudo update-alternatives --install /usr/bin/llvm-profdata llvm-profdata /usr/bin/llvm-profdata-${{ env.CLANG_VERSION }} 255
+          clang --version
+          llvm-cov --version
+
+      - name: Configure CMake with Coverage
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DUNITS_BUILD_TESTS=ON \
+            -DUNITS_ENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Generate Coverage Report
+        run: cmake --build build --target coverage
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: build/coverage/coverage.lcov
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload Coverage HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-cmake
           path: build/coverage/html/
           retention-days: 30
 

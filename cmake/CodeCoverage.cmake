@@ -73,6 +73,7 @@ function(add_coverage_target TARGET_NAME)
 
     set(COVERAGE_DIR "${CMAKE_BINARY_DIR}/coverage")
     set(COVERAGE_INFO "${COVERAGE_DIR}/coverage.info")
+    set(COVERAGE_LCOV "${COVERAGE_DIR}/coverage.lcov")
     set(COVERAGE_HTML "${COVERAGE_DIR}/html")
 
     if(COVERAGE_TOOL STREQUAL "gcov")
@@ -129,7 +130,11 @@ function(add_coverage_target TARGET_NAME)
                 --show-details
                 --demangle-cpp
 
+            # Copy to .lcov for Codecov compatibility
+            COMMAND ${CMAKE_COMMAND} -E copy ${COVERAGE_INFO} ${COVERAGE_LCOV}
+
             COMMAND ${CMAKE_COMMAND} -E echo "Coverage report: ${COVERAGE_HTML}/index.html"
+            COMMAND ${CMAKE_COMMAND} -E echo "LCOV export: ${COVERAGE_LCOV}"
 
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMENT "Generating code coverage report..."
@@ -148,6 +153,7 @@ function(add_coverage_target TARGET_NAME)
 
         # Create a shell script to handle the coverage workflow (uses file(GENERATE) for generator expressions)
         set(COVERAGE_SCRIPT "${CMAKE_BINARY_DIR}/run_coverage.sh")
+        set(COVERAGE_LCOV "${COVERAGE_DIR}/coverage.lcov")
         file(GENERATE OUTPUT ${COVERAGE_SCRIPT} CONTENT "#!/bin/bash
 set -e
 cd '${CMAKE_BINARY_DIR}'
@@ -166,6 +172,14 @@ echo 'Merging profile data...'
     -show-instantiations=false \\
     -ignore-filename-regex='(tests|_deps|catch2|Catch2)/.*'
 
+# Export to lcov format for Codecov
+'${LLVM_COV_PATH}' export \\
+    ${TEST_OBJECTS_STR} \\
+    -instr-profile='${PROFDATA_FILE}' \\
+    -format=lcov \\
+    -ignore-filename-regex='(tests|_deps|catch2|Catch2)/.*' \\
+    > '${COVERAGE_LCOV}'
+
 # Generate summary report
 '${LLVM_COV_PATH}' report \\
     ${TEST_OBJECTS_STR} \\
@@ -173,6 +187,7 @@ echo 'Merging profile data...'
     -ignore-filename-regex='(tests|_deps|catch2|Catch2)/.*'
 
 echo 'Coverage report: ${COVERAGE_HTML}/index.html'
+echo 'LCOV export: ${COVERAGE_LCOV}'
 ")
 
         add_custom_target(${TARGET_NAME}
