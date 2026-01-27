@@ -1,6 +1,6 @@
 # units - A C++23 Physical Quantities Library
 
-A compile-time dimensional analysis library for C++23, optimized for zero overhead and embedded systems compatibility. Header-only with optional C++23 modules support.
+A compile-time dimensional analysis library for C++23, optimized for zero overhead and embedded systems compatibility.
 
 ## Quick Start
 
