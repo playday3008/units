@@ -18,6 +18,9 @@ option(UNITS_BUILD_TESTS "Build unit tests" ON)
 option(UNITS_ENABLE_COMPILE_FAIL_TESTS "Enable compile-fail tests" ON)
 option(UNITS_EMBEDDED_FRIENDLY "Disable exceptions and RTTI" OFF)
 
+# Code coverage support
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CodeCoverage.cmake)
+
 # Header-only library target
 add_library(units INTERFACE)
 add_library(units::units ALIAS units)

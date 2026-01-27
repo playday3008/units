@@ -152,8 +152,8 @@ xmake run example_basic_quantities  # Run specific example
 ### Code Quality
 
 ```bash
-xmake check clang.tidy    # Run linter
-xmake format              # Format code
+xmake lint    # Run linter
+xmake format  # Format code
 ```
 
 ### Development Container

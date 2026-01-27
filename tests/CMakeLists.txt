@@ -97,3 +97,21 @@ set_target_properties(compile_time_benchmark PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
 )
+
+# Code coverage target
+if(UNITS_ENABLE_COVERAGE AND UNITS_ENABLE_RUNTIME_TESTS)
+    # Collect all runtime test targets for coverage
+    set(COVERAGE_TEST_TARGETS "")
+    foreach(source ${RUNTIME_TEST_SOURCES})
+        get_filename_component(test_name ${source} NAME_WE)
+        list(APPEND COVERAGE_TEST_TARGETS "runtime_${test_name}")
+    endforeach()
+
+    # Also include static tests
+    foreach(source ${STATIC_TEST_SOURCES})
+        get_filename_component(test_name ${source} NAME_WE)
+        list(APPEND COVERAGE_TEST_TARGETS "static_${test_name}")
+    endforeach()
+
+    add_coverage_target(coverage ${COVERAGE_TEST_TARGETS})
+endif()
