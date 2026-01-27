@@ -400,8 +400,9 @@ jobs:
             exit 1
           fi
 
-          # Detect build directory dynamically
-          BUILD_DIR=$(xmake l -c 'import("core.project.config"); print(path.join(config.buildir(), config.plat(), config.arch(), config.mode()))')
+          # Detect build directory dynamically (use builddir not buildir)
+          BUILD_DIR=$(xmake l -c 'import("core.project.config"); config.load(); print(path.join(config.builddir(), config.plat(), config.arch(), config.mode()))')
+          echo "Build directory: $BUILD_DIR"
 
           # Find all test executables
           TEST_OBJECTS=""
@@ -413,6 +414,7 @@ jobs:
 
           if [ -z "$TEST_OBJECTS" ]; then
             echo "Error: No test executables found in $BUILD_DIR"
+            ls -la "$BUILD_DIR" || echo "Directory doesn't exist"
             exit 1
           fi
 
