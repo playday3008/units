@@ -69,25 +69,23 @@ jobs:
       - name: Build and Run Example Tests
         run: |
           xmake build -v example_tests
-          xmake run example_basic_quantities
-          xmake run example_cgs_units
-          xmake run example_derived_quantities
-          xmake run example_natural_units
-          xmake run example_quick_start
-          xmake run example_imperial_units
-          xmake run example_math_functions
-          xmake run example_unit_conversions
-          xmake run example_zero_overhead
-          xmake run example_temperature_conversions
-          xmake run example_math_functions_extended
-          xmake run example_formatting
+          for file in tests/examples/*.cpp; do
+            name="example_$(basename "${file%.cpp}")"
+            echo "Running $name..."
+            xmake run "$name"
+          done
 
       - name: Run Compile-Fail Tests
         run: |
-          xmake build -v fail_add_incompatible_dimensions || true
-          xmake build -v fail_implicit_narrowing || true
-          xmake build -v fail_point_plus_point || true
-          xmake build -v fail_torque_to_energy || true
+          for file in tests/compile_fail/*.cpp; do
+            name="fail_$(basename "${file%.cpp}")"
+            echo "Testing $name (should fail to compile)..."
+            if xmake build -v "$name" 2>/dev/null; then
+              echo "ERROR: $name should have failed to compile!"
+              exit 1
+            fi
+            echo "OK: $name correctly failed to compile"
+          done
 
   build-macos-xmake:
     name: macOS xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
@@ -141,25 +139,23 @@ jobs:
       - name: Build and Run Example Tests
         run: |
           xmake build -v example_tests
-          xmake run example_basic_quantities
-          xmake run example_cgs_units
-          xmake run example_derived_quantities
-          xmake run example_natural_units
-          xmake run example_quick_start
-          xmake run example_imperial_units
-          xmake run example_math_functions
-          xmake run example_unit_conversions
-          xmake run example_zero_overhead
-          xmake run example_temperature_conversions
-          xmake run example_math_functions_extended
-          xmake run example_formatting
+          for file in tests/examples/*.cpp; do
+            name="example_$(basename "${file%.cpp}")"
+            echo "Running $name..."
+            xmake run "$name"
+          done
 
       - name: Run Compile-Fail Tests
         run: |
-          xmake build -v fail_add_incompatible_dimensions || true
-          xmake build -v fail_implicit_narrowing || true
-          xmake build -v fail_point_plus_point || true
-          xmake build -v fail_torque_to_energy || true
+          for file in tests/compile_fail/*.cpp; do
+            name="fail_$(basename "${file%.cpp}")"
+            echo "Testing $name (should fail to compile)..."
+            if xmake build -v "$name" 2>/dev/null; then
+              echo "ERROR: $name should have failed to compile!"
+              exit 1
+            fi
+            echo "OK: $name correctly failed to compile"
+          done
 
   build-windows-xmake:
     name: Windows xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
@@ -192,25 +188,25 @@ jobs:
       - name: Build and Run Example Tests
         run: |
           xmake build -v example_tests
-          xmake run example_basic_quantities
-          xmake run example_cgs_units
-          xmake run example_derived_quantities
-          xmake run example_natural_units
-          xmake run example_quick_start
-          xmake run example_imperial_units
-          xmake run example_math_functions
-          xmake run example_unit_conversions
-          xmake run example_zero_overhead
-          xmake run example_temperature_conversions
-          xmake run example_math_functions_extended
-          xmake run example_formatting
+          foreach ($file in Get-ChildItem -Path "tests/examples/*.cpp") {
+            $name = "example_" + $file.BaseName
+            Write-Host "Running $name..."
+            xmake run $name
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
 
       - name: Run Compile-Fail Tests
         run: |
-          xmake build -v fail_add_incompatible_dimensions; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
-          xmake build -v fail_implicit_narrowing; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
-          xmake build -v fail_point_plus_point; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
-          xmake build -v fail_torque_to_energy; if ($LASTEXITCODE -ne 0) { $LASTEXITCODE = 0 }
+          foreach ($file in Get-ChildItem -Path "tests/compile_fail/*.cpp") {
+            $name = "fail_" + $file.BaseName
+            Write-Host "Testing $name (should fail to compile)..."
+            xmake build -v $name 2>$null
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "ERROR: $name should have failed to compile!"
+              exit 1
+            }
+            Write-Host "OK: $name correctly failed to compile"
+          }
 
   # ============================================================================
   # CMake Builds

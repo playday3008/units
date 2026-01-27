@@ -28,6 +28,7 @@ end
 
 -- Options
 option("tests", {default = true, description = "Build unit tests"})
+option("runtime_tests", {default = true, description = "Enable runtime tests with Catch2"})
 option("compile_fail_tests", {default = true, description = "Enable compile-fail tests"})
 option("embedded", {default = false, description = "Embedded-friendly (no exceptions/RTTI)"})
 

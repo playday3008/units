@@ -1,7 +1,9 @@
 -- tests/xmake.lua
 
 -- Catch2 package for runtime tests
-add_requires("catch2 3.x", {alias = "catch2"})
+if has_config("runtime_tests") then
+    add_requires("catch2 3.x", {alias = "catch2"})
+end
 
 -- Static assertion tests - each file is a separate target
 for _, file in ipairs(os.files("static/*.cpp")) do
@@ -27,28 +29,30 @@ target("static_tests")
 target_end()
 
 -- Runtime tests with Catch2
-for _, file in ipairs(os.files("runtime/*.cpp")) do
-    local name = "runtime_" .. path.basename(file)
-    target(name)
-        set_kind("binary")
+if has_config("runtime_tests") then
+    for _, file in ipairs(os.files("runtime/*.cpp")) do
+        local name = "runtime_" .. path.basename(file)
+        target(name)
+            set_kind("binary")
+            set_default(false)
+            add_deps("units")
+            add_packages("catch2")
+            add_files(file)
+            set_group("tests/runtime")
+        target_end()
+    end
+
+    -- Convenience target to build all runtime tests
+    target("runtime_tests")
+        set_kind("phony")
         set_default(false)
-        add_deps("units")
-        add_packages("catch2")
-        add_files(file)
+        for _, file in ipairs(os.files("runtime/*.cpp")) do
+            local name = "runtime_" .. path.basename(file)
+            add_deps(name)
+        end
         set_group("tests/runtime")
     target_end()
 end
-
--- Convenience target to build all runtime tests
-target("runtime_tests")
-    set_kind("phony")
-    set_default(false)
-    for _, file in ipairs(os.files("runtime/*.cpp")) do
-        local name = "runtime_" .. path.basename(file)
-        add_deps(name)
-    end
-    set_group("tests/runtime")
-target_end()
 
 -- Compile-fail tests using custom rule
 if has_config("compile_fail_tests") then
@@ -132,7 +136,9 @@ target("tests")
     set_kind("phony")
     set_default(false)
     add_deps("static_tests")
-    add_deps("runtime_tests")
+    if has_config("runtime_tests") then
+        add_deps("runtime_tests")
+    end
 
     on_run(function (target)
         import("core.project.project")
@@ -147,13 +153,15 @@ target("tests")
             end
         end
 
-        -- Run runtime tests
-        print("Running runtime tests...")
-        for _, file in ipairs(os.files("runtime/*.cpp")) do
-            local name = "runtime_" .. path.basename(file)
-            local t = project.target(name)
-            if t and t:targetfile() then
-                os.execv(t:targetfile())
+        -- Run runtime tests (if enabled)
+        if has_config("runtime_tests") then
+            print("Running runtime tests...")
+            for _, file in ipairs(os.files("runtime/*.cpp")) do
+                local name = "runtime_" .. path.basename(file)
+                local t = project.target(name)
+                if t and t:targetfile() then
+                    os.execv(t:targetfile())
+                end
             end
         end
 
