@@ -839,4 +839,205 @@ TEST_CASE("is_quantity type trait", "[quantity][traits]") {
   }
 }
 
+// =============================================================================
+// Operations with different compatible references
+// =============================================================================
+
+TEST_CASE("Operations with different compatible references", "[quantity][compatible_refs]") {
+  SECTION("km + m uses different compatible references") {
+    auto km_val = 1.0_km;
+    auto m_val  = 500.0_m;
+    // This triggers the operator+ overload for different but compatible references
+    auto result = km_val + m_val;
+    // Result should be in km (first operand's unit), so 1.0 + 0.5 = 1.5 km
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(1.5, 1e-10));
+  }
+
+  SECTION("m + km uses different compatible references") {
+    auto m_val  = 500.0_m;
+    auto km_val = 1.0_km;
+    // Result should be in m (first operand's unit), so 500.0 + 1000.0 = 1500.0 m
+    auto result = m_val + km_val;
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(1500.0, 1e-10));
+  }
+
+  SECTION("km - m uses different compatible references") {
+    auto km_val = 2.0_km;
+    auto m_val  = 500.0_m;
+    // Result should be in km, so 2.0 - 0.5 = 1.5 km
+    auto result = km_val - m_val;
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(1.5, 1e-10));
+  }
+
+  SECTION("m - km uses different compatible references") {
+    auto m_val  = 2000.0_m;
+    auto km_val = 1.0_km;
+    // Result should be in m, so 2000.0 - 1000.0 = 1000.0 m
+    auto result = m_val - km_val;
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(1000.0, 1e-10));
+  }
+
+  SECTION("km == m comparison with different references") {
+    auto km_val = 1.0_km;
+    auto m_val  = 1000.0_m;
+    // Should be equal after conversion
+    REQUIRE(km_val == m_val);
+  }
+
+  SECTION("km != m comparison with different references") {
+    auto km_val = 1.0_km;
+    auto m_val  = 500.0_m;
+    // Should not be equal
+    REQUIRE(km_val != m_val);
+  }
+
+  SECTION("km <=> m three-way comparison with different references") {
+    auto km_val = 1.0_km;
+    auto m_val  = 500.0_m;
+    // 1 km > 500 m
+    REQUIRE((km_val <=> m_val) > 0);
+    REQUIRE(km_val > m_val);
+  }
+
+  SECTION("m < km comparison") {
+    auto m_val  = 500.0_m;
+    auto km_val = 1.0_km;
+    // 500 m < 1 km
+    REQUIRE(m_val < km_val);
+  }
+}
+
+// =============================================================================
+// Derived unit formatting with multiple terms (middle dot coverage)
+// =============================================================================
+
+TEST_CASE("Derived unit formatting with multiple terms", "[format][derived]") {
+  SECTION("Format m*m (area)") {
+    auto length = 3.0_m;
+    auto width  = 4.0_m;
+    auto area   = length * width;
+    auto str    = std::format("{}", area);
+    // Should contain the area value
+    REQUIRE(str.find("12") != std::string::npos);
+  }
+
+  SECTION("Format m*m*m (volume) - triggers middle dot") {
+    auto l      = 2.0_m;
+    auto w      = 3.0_m;
+    auto h      = 4.0_m;
+    auto volume = l * w * h;
+    auto str    = std::format("{}", volume);
+    // Should contain 24
+    REQUIRE(str.find("24") != std::string::npos);
+  }
+
+  SECTION("Format m/s (speed)") {
+    auto distance = 100.0_m;
+    auto time     = 10.0_s;
+    auto speed    = distance / time;
+    auto str      = std::format("{}", speed);
+    // Should contain 10
+    REQUIRE(str.find("10") != std::string::npos);
+  }
+
+  SECTION("Format kg*m/s^2 (force-like)") {
+    auto mass         = 2.0_kg;
+    auto distance     = 5.0_m;
+    auto time         = 2.0_s;
+    auto acceleration = distance / (time * time);
+    auto force_like   = mass * acceleration;
+    auto str          = std::format("{}", force_like);
+    // Should contain the value 2.5
+    REQUIRE(str.find("2.5") != std::string::npos);
+  }
+}
+
+// =============================================================================
+// Additional quantity multiplication/division tests
+// =============================================================================
+
+TEST_CASE("Quantity multiplication creates derived quantities", "[quantity][multiplication]") {
+  SECTION("m * m = m^2") {
+    auto l    = 5.0_m;
+    auto w    = 4.0_m;
+    auto area = l * w;
+    REQUIRE_THAT(area.value(), Catch::Matchers::WithinAbs(20.0, 1e-10));
+  }
+
+  SECTION("m * m * m = m^3") {
+    auto l      = 2.0_m;
+    auto w      = 3.0_m;
+    auto h      = 4.0_m;
+    auto volume = l * w * h;
+    REQUIRE_THAT(volume.value(), Catch::Matchers::WithinAbs(24.0, 1e-10));
+  }
+
+  SECTION("m / s = speed") {
+    auto dist  = 100.0_m;
+    auto t     = 5.0_s;
+    auto speed = dist / t;
+    REQUIRE_THAT(speed.value(), Catch::Matchers::WithinAbs(20.0, 1e-10));
+  }
+
+  SECTION("m / s / s = acceleration") {
+    auto dist  = 50.0_m;
+    auto t     = 5.0_s;
+    auto accel = dist / t / t;
+    REQUIRE_THAT(accel.value(), Catch::Matchers::WithinAbs(2.0, 1e-10));
+  }
+
+  SECTION("kg * m / s^2 = force") {
+    auto mass  = 10.0_kg;
+    auto dist  = 20.0_m;
+    auto t     = 2.0_s;
+    auto force = mass * dist / (t * t);
+    REQUIRE_THAT(force.value(), Catch::Matchers::WithinAbs(50.0, 1e-10));
+  }
+}
+
+// =============================================================================
+// Temperature factory functions direct usage
+// =============================================================================
+
+TEST_CASE("Temperature factory functions", "[temperature][factory]") {
+  SECTION("kelvin_pt creates temperature point") {
+    auto temp = kelvin_pt(300.0);
+    REQUIRE_THAT(temp.value(), Catch::Matchers::WithinAbs(300.0, 1e-10));
+  }
+
+  SECTION("celsius_pt creates temperature point") {
+    auto temp = celsius_pt(25.0);
+    REQUIRE_THAT(temp.value(), Catch::Matchers::WithinAbs(25.0, 1e-10));
+  }
+
+  SECTION("fahrenheit_pt creates temperature point") {
+    auto temp = fahrenheit_pt(77.0);
+    REQUIRE_THAT(temp.value(), Catch::Matchers::WithinAbs(77.0, 1e-10));
+  }
+}
+
+// =============================================================================
+// Temperature conversion functions
+// =============================================================================
+
+TEST_CASE("Temperature conversion functions", "[temperature][conversion]") {
+  SECTION("to_kelvin from kelvin (no-op)") {
+    auto k      = kelvin_pt(300.0);
+    auto result = to_kelvin(k);
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(300.0, 1e-10));
+  }
+
+  SECTION("to_celsius from celsius (no-op)") {
+    auto c      = celsius_pt(25.0);
+    auto result = to_celsius(c);
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(25.0, 1e-10));
+  }
+
+  SECTION("to_fahrenheit from fahrenheit (no-op)") {
+    auto f      = fahrenheit_pt(77.0);
+    auto result = to_fahrenheit(f);
+    REQUIRE_THAT(result.value(), Catch::Matchers::WithinAbs(77.0, 1e-10));
+  }
+}
+
 // NOLINTEND(readability-function-cognitive-complexity)
