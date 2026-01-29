@@ -260,7 +260,7 @@ TEST_CASE("Ratio value conversion", "[ratio]") {
   SECTION("ratio equals comparison") {
     constexpr auto r1 = ratio<2, 4> {};
     constexpr auto r2 = ratio<1, 2> {};
-    static_assert(r1.equals(r2));
+    static_assert(r1.equals(r2)); // NOLINT(readability-static-accessed-through-instance)
   }
 
   SECTION("ratio with negative numerator") {
@@ -393,7 +393,7 @@ TEST_CASE("Exponential and logarithmic functions", "[math][exp_log]") {
   }
 
   SECTION("exp of 1") {
-    auto result = units::exp(1.0);
+    auto result = units::exp(1.0); // NOLINT(modernize-use-std-numbers)
     REQUIRE_THAT(result, Catch::Matchers::WithinAbs(std::numbers::e, 1e-10));
   }
 
@@ -438,8 +438,8 @@ TEST_CASE("Exponential and logarithmic functions", "[math][exp_log]") {
   }
 
   SECTION("exp and log are inverses") {
-    double x      = 2.5;
-    auto   result = units::log(units::exp(x));
+    const double x      = 2.5;
+    auto         result = units::log(units::exp(x));
     REQUIRE_THAT(result, Catch::Matchers::WithinAbs(x, 1e-10));
   }
 }

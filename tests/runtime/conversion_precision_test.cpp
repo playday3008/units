@@ -12,6 +12,8 @@ using namespace units;
 using namespace units::si;
 using namespace units::si::literals;
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+
 TEST_CASE("Length unit round-trip conversions", "[conversion][precision]") {
   SECTION("Metres to kilometres and back") {
     constexpr auto original  = 1234.5_m;
@@ -155,3 +157,5 @@ TEST_CASE("Derived unit conversions", "[conversion][precision]") {
     REQUIRE_THAT(area.value(), Catch::Matchers::WithinAbs(50.0, 1e-10));
   }
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)

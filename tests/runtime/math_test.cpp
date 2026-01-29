@@ -220,23 +220,28 @@ TEST_CASE("Trigonometric functions", "[math][trig]") {
 
   SECTION("Large negative angle normalization") {
     // sin(-4*pi + pi/2) = sin(pi/2) = 1
-    auto large_negative = make_quantity((-4.0 * std::numbers::pi) + (std::numbers::pi / 2.0), radian);
-    auto result         = sin(large_negative);
+    auto large_negative
+        = make_quantity((-4.0 * std::numbers::pi) + (std::numbers::pi / 2.0), radian);
+    auto result = sin(large_negative);
     REQUIRE_THAT(result, Catch::Matchers::WithinAbs(1.0, 1e-9));
   }
 
   SECTION("Very large angle - sin") {
     // Test with a very large angle (100 * 2*pi + pi/6)
     // sin(100 * 2*pi + pi/6) = sin(pi/6) = 0.5
-    auto very_large = make_quantity((100.0 * 2.0 * std::numbers::pi) + (std::numbers::pi / 6.0), radian);
-    auto result     = sin(very_large);
-    REQUIRE_THAT(result, Catch::Matchers::WithinAbs(0.5, 1e-8)); // Slightly looser tolerance for accumulation
+    auto very_large
+        = make_quantity((100.0 * 2.0 * std::numbers::pi) + (std::numbers::pi / 6.0), radian);
+    auto result = sin(very_large);
+    REQUIRE_THAT(
+        result,
+        Catch::Matchers::WithinAbs(0.5, 1e-8)); // Slightly looser tolerance for accumulation
   }
 
   SECTION("Very large angle - cos") {
     // cos(100 * 2*pi + pi/3) = cos(pi/3) = 0.5
-    auto very_large = make_quantity((100.0 * 2.0 * std::numbers::pi) + (std::numbers::pi / 3.0), radian);
-    auto result     = cos(very_large);
+    auto very_large
+        = make_quantity((100.0 * 2.0 * std::numbers::pi) + (std::numbers::pi / 3.0), radian);
+    auto result = cos(very_large);
     REQUIRE_THAT(result, Catch::Matchers::WithinAbs(0.5, 1e-8));
   }
 }

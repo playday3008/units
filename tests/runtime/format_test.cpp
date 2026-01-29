@@ -15,6 +15,8 @@ using namespace units;
 using namespace units::si;
 using namespace units::si::literals;
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+
 TEST_CASE("Basic quantity formatting", "[format]") {
   SECTION("Length quantities") {
     auto distance  = 100.0_m;
@@ -202,3 +204,5 @@ TEST_CASE("CGS unit formatting", "[format][cgs]") {
     REQUIRE_THAT(formatted, Catch::Matchers::ContainsSubstring("G"));
   }
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)

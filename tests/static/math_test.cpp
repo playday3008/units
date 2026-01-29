@@ -164,8 +164,8 @@ namespace units::test {
 
   // Large angle normalization tests
   // sin(2*pi + pi/2) = sin(pi/2) = 1
-  static_assert(approx(sin(operator""_rad((2.0L * std::numbers::pi_v<long double>)
-                                          + (std::numbers::pi_v<long double> / 2))),
+  static_assert(approx(sin(operator""_rad((2.0L * std::numbers::pi_v<long double>)+(
+                           std::numbers::pi_v<long double> / 2))),
                        1.0,
                        1e-5));
 
@@ -173,8 +173,8 @@ namespace units::test {
   static_assert(approx(cos(operator""_rad(4.0L * std::numbers::pi_v<long double>)), 1.0, 1e-5));
 
   // sin(-4*pi + pi/2) = sin(pi/2) = 1
-  static_assert(approx(sin(operator""_rad((-4.0L * std::numbers::pi_v<long double>)
-                                          + (std::numbers::pi_v<long double> / 2))),
+  static_assert(approx(sin(operator""_rad((-4.0L * std::numbers::pi_v<long double>)+(
+                           std::numbers::pi_v<long double> / 2))),
                        1.0,
                        1e-5));
 

@@ -530,18 +530,14 @@ namespace units {
   // Without __int128, clamp to max representable (10^18)
   // These are marked deprecated to warn users about the limitation
   namespace detail {
-    struct
-        [[deprecated("quetta (10^30) clamped to 10^18 - use compiler with __int128")]] quetta_clamped
-        : ratio<power_of_10_v<18>, 1> {};
-    struct
-        [[deprecated("ronna (10^27) clamped to 10^18 - use compiler with __int128")]] ronna_clamped
-        : ratio<power_of_10_v<18>, 1> {};
-    struct
-        [[deprecated("yotta (10^24) clamped to 10^18 - use compiler with __int128")]] yotta_clamped
-        : ratio<power_of_10_v<18>, 1> {};
-    struct
-        [[deprecated("zetta (10^21) clamped to 10^18 - use compiler with __int128")]] zetta_clamped
-        : ratio<power_of_10_v<18>, 1> {};
+    struct [[deprecated("quetta (10^30) clamped to 10^18 - use compiler with __int128")]]
+    quetta_clamped : ratio<power_of_10_v<18>, 1> {};
+    struct [[deprecated("ronna (10^27) clamped to 10^18 - use compiler with __int128")]]
+    ronna_clamped : ratio<power_of_10_v<18>, 1> {};
+    struct [[deprecated("yotta (10^24) clamped to 10^18 - use compiler with __int128")]]
+    yotta_clamped : ratio<power_of_10_v<18>, 1> {};
+    struct [[deprecated("zetta (10^21) clamped to 10^18 - use compiler with __int128")]]
+    zetta_clamped : ratio<power_of_10_v<18>, 1> {};
   } // namespace detail
   using quetta = detail::quetta_clamped;
   using ronna  = detail::ronna_clamped;
@@ -579,15 +575,12 @@ namespace units {
   // Without __int128, clamp to max representable (10^-18)
   // These are marked deprecated to warn users about the limitation
   namespace detail {
-    struct
-        [[deprecated("zepto (10^-21) clamped to 10^-18 - use compiler with __int128")]] zepto_clamped
-        : ratio<1, power_of_10_v<18>> {};
-    struct
-        [[deprecated("yocto (10^-24) clamped to 10^-18 - use compiler with __int128")]] yocto_clamped
-        : ratio<1, power_of_10_v<18>> {};
-    struct
-        [[deprecated("ronto (10^-27) clamped to 10^-18 - use compiler with __int128")]] ronto_clamped
-        : ratio<1, power_of_10_v<18>> {};
+    struct [[deprecated("zepto (10^-21) clamped to 10^-18 - use compiler with __int128")]]
+    zepto_clamped : ratio<1, power_of_10_v<18>> {};
+    struct [[deprecated("yocto (10^-24) clamped to 10^-18 - use compiler with __int128")]]
+    yocto_clamped : ratio<1, power_of_10_v<18>> {};
+    struct [[deprecated("ronto (10^-27) clamped to 10^-18 - use compiler with __int128")]]
+    ronto_clamped : ratio<1, power_of_10_v<18>> {};
     struct [[deprecated("quecto (10^-30) clamped to 10^-18 - use compiler with __int128")]]
     quecto_clamped : ratio<1, power_of_10_v<18>> {};
   } // namespace detail
