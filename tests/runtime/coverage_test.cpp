@@ -154,26 +154,31 @@ TEST_CASE("Quantity comparison operators", "[quantity][comparison]") {
   }
 
   SECTION("three-way comparison - less than") {
-    auto a   = 5.0_m;
-    auto b   = 10.0_m;
-    auto cmp = a <=> b;
-    REQUIRE(cmp < 0);
-    REQUIRE(a < b);
+    auto       a        = 5.0_m;
+    auto       b        = 10.0_m;
+    auto       cmp      = a <=> b;
+    const bool is_less  = cmp < 0;
+    const bool a_less_b = a < b;
+    REQUIRE(is_less);
+    REQUIRE(a_less_b);
   }
 
   SECTION("three-way comparison - greater than") {
-    auto a   = 10.0_m;
-    auto b   = 5.0_m;
-    auto cmp = a <=> b;
-    REQUIRE(cmp > 0);
-    REQUIRE(a > b);
+    auto       a           = 10.0_m;
+    auto       b           = 5.0_m;
+    auto       cmp         = a <=> b;
+    const bool is_greater  = cmp > 0;
+    const bool a_greater_b = a > b;
+    REQUIRE(is_greater);
+    REQUIRE(a_greater_b);
   }
 
   SECTION("three-way comparison - equal") {
-    auto a   = 5.0_m;
-    auto b   = 5.0_m;
-    auto cmp = a <=> b;
-    REQUIRE(cmp == 0);
+    auto       a        = 5.0_m;
+    auto       b        = 5.0_m;
+    auto       cmp      = a <=> b;
+    const bool is_equal = cmp == 0;
+    REQUIRE(is_equal);
   }
 
   SECTION("less than or equal") {
@@ -634,19 +639,23 @@ TEST_CASE("Quantity point comparison", "[quantity_point][comparison]") {
   }
 
   SECTION("three-way comparison - less than") {
-    auto a   = kelvin_pt(300.0);
-    auto b   = kelvin_pt(350.0);
-    auto cmp = a <=> b;
-    REQUIRE(cmp < 0);
-    REQUIRE(a < b);
+    auto       a        = kelvin_pt(300.0);
+    auto       b        = kelvin_pt(350.0);
+    auto       cmp      = a <=> b;
+    const bool is_less  = cmp < 0;
+    const bool a_less_b = a < b;
+    REQUIRE(is_less);
+    REQUIRE(a_less_b);
   }
 
   SECTION("three-way comparison - greater than") {
-    auto a   = kelvin_pt(350.0);
-    auto b   = kelvin_pt(300.0);
-    auto cmp = a <=> b;
-    REQUIRE(cmp > 0);
-    REQUIRE(a > b);
+    auto       a           = kelvin_pt(350.0);
+    auto       b           = kelvin_pt(300.0);
+    auto       cmp         = a <=> b;
+    const bool is_greater  = cmp > 0;
+    const bool a_greater_b = a > b;
+    REQUIRE(is_greater);
+    REQUIRE(a_greater_b);
   }
 }
 
@@ -902,16 +911,19 @@ TEST_CASE("Operations with different compatible references", "[quantity][compati
     auto km_val = 1.0_km;
     auto m_val  = 500.0_m;
     // 1 km > 500 m
-    auto cmp = km_val <=> m_val;
-    REQUIRE(cmp > 0);
-    REQUIRE(km_val > m_val);
+    auto       cmp          = km_val <=> m_val;
+    const bool is_greater   = cmp > 0;
+    const bool km_greater_m = km_val > m_val;
+    REQUIRE(is_greater);
+    REQUIRE(km_greater_m);
   }
 
   SECTION("m < km comparison") {
     auto m_val  = 500.0_m;
     auto km_val = 1.0_km;
     // 500 m < 1 km
-    REQUIRE(m_val < km_val);
+    const bool m_less_km = m_val < km_val;
+    REQUIRE(m_less_km);
   }
 }
 
@@ -932,8 +944,8 @@ TEST_CASE("Derived unit formatting with multiple terms", "[format][derived]") {
   SECTION("Format m*m*m (volume) - triggers middle dot") {
     auto l      = 2.0_m;
     auto w      = 3.0_m;
-    auto h      = 4.0_m;
-    auto volume = l * w * h;
+    auto ht     = 4.0_m;
+    auto volume = l * w * ht;
     auto str    = std::format("{}", volume);
     // Should contain 24
     REQUIRE(str.find("24") != std::string::npos);
@@ -975,8 +987,8 @@ TEST_CASE("Quantity multiplication creates derived quantities", "[quantity][mult
   SECTION("m * m * m = m^3") {
     auto l      = 2.0_m;
     auto w      = 3.0_m;
-    auto h      = 4.0_m;
-    auto volume = l * w * h;
+    auto ht     = 4.0_m;
+    auto volume = l * w * ht;
     REQUIRE_THAT(volume.value(), Catch::Matchers::WithinAbs(24.0, 1e-10));
   }
 
