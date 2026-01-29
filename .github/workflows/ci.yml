@@ -78,6 +78,13 @@ jobs:
       - name: Run Compile-Fail Tests
         run: xmake build compile_fail_tests
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-xmake-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: build/
+          retention-days: 7
+
   build-macos-xmake:
     name: macOS xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: macos-latest
@@ -139,6 +146,13 @@ jobs:
       - name: Run Compile-Fail Tests
         run: xmake build compile_fail_tests
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-xmake-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: build/
+          retention-days: 7
+
   build-windows-xmake:
     name: Windows xmake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: windows-latest
@@ -179,6 +193,13 @@ jobs:
 
       - name: Run Compile-Fail Tests
         run: xmake build compile_fail_tests
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-xmake-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: build/
+          retention-days: 7
 
   # ============================================================================
   # CMake Builds
@@ -238,6 +259,13 @@ jobs:
       - name: Run Tests
         run: ctest --test-dir build --output-on-failure
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-cmake-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: build/
+          retention-days: 7
+
   build-macos-cmake:
     name: macOS CMake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: macos-latest
@@ -288,6 +316,13 @@ jobs:
       - name: Run Tests
         run: ctest --test-dir build --output-on-failure
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-cmake-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: build/
+          retention-days: 7
+
   build-windows-cmake:
     name: Windows CMake (${{ matrix.compiler }}, ${{ matrix.build_type }})
     runs-on: windows-latest
@@ -318,6 +353,13 @@ jobs:
 
       - name: Run Tests
         run: ctest --test-dir build --build-config ${{ matrix.build_type }} --output-on-failure
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-cmake-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: build/
+          retention-days: 7
 
   # ============================================================================
   # Code Coverage (xmake)
