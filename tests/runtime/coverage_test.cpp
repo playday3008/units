@@ -6,6 +6,8 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
+#include <format>
+#include <string>
 #include <units/units.hpp>
 
 #include <cmath>

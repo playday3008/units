@@ -196,6 +196,7 @@ namespace units {
 ///   std::format("{:10.3f}", 5.0_m)  -> "     5.000 m"
 template<units::Reference Ref, typename Rep>
 struct std::formatter<units::quantity<Ref, Rep>> {
+    // MSVC does not understand `const auto *`
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     // std::formatter is a standard library customization point that requires public members
     units::quantity_format_options opts;
@@ -203,8 +204,10 @@ struct std::formatter<units::quantity<Ref, Rep>> {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
     constexpr auto parse(std::format_parse_context &ctx) {
-      const auto *it  = ctx.begin();
-      const auto *end = ctx.end();
+      // NOLINTBEGIN(readability-qualified-auto, llvm-qualified-auto)
+      auto it  = ctx.begin();
+      auto end = ctx.end();
+      // NOLINTEND(readability-qualified-auto, llvm-qualified-auto)
 
       // Build format spec for the numeric value
       format_spec = "{:";
