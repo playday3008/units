@@ -357,5 +357,13 @@ namespace units::test {
 
 // Main function - if this compiles, all static tests pass
 auto main() -> int {
+  // Make code coverage tools happy by referencing test functions
+  (void)units::test::compound_assignment_tests::test_add_assign();
+  (void)units::test::compound_assignment_tests::test_sub_assign();
+  (void)units::test::compound_assignment_tests::test_mul_assign();
+  (void)units::test::compound_assignment_tests::test_div_assign();
+  (void)units::test::integration_tests::calc_kinetic_energy();
+  (void)units::test::integration_tests::calc_avg_speed();
+
   return 0;
 }
