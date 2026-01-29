@@ -154,23 +154,26 @@ TEST_CASE("Quantity comparison operators", "[quantity][comparison]") {
   }
 
   SECTION("three-way comparison - less than") {
-    auto a = 5.0_m;
-    auto b = 10.0_m;
-    REQUIRE((a <=> b) < 0);
+    auto a   = 5.0_m;
+    auto b   = 10.0_m;
+    auto cmp = a <=> b;
+    REQUIRE(cmp < 0);
     REQUIRE(a < b);
   }
 
   SECTION("three-way comparison - greater than") {
-    auto a = 10.0_m;
-    auto b = 5.0_m;
-    REQUIRE((a <=> b) > 0);
+    auto a   = 10.0_m;
+    auto b   = 5.0_m;
+    auto cmp = a <=> b;
+    REQUIRE(cmp > 0);
     REQUIRE(a > b);
   }
 
   SECTION("three-way comparison - equal") {
-    auto a = 5.0_m;
-    auto b = 5.0_m;
-    REQUIRE((a <=> b) == 0);
+    auto a   = 5.0_m;
+    auto b   = 5.0_m;
+    auto cmp = a <=> b;
+    REQUIRE(cmp == 0);
   }
 
   SECTION("less than or equal") {
@@ -631,16 +634,18 @@ TEST_CASE("Quantity point comparison", "[quantity_point][comparison]") {
   }
 
   SECTION("three-way comparison - less than") {
-    auto a = kelvin_pt(300.0);
-    auto b = kelvin_pt(350.0);
-    REQUIRE((a <=> b) < 0);
+    auto a   = kelvin_pt(300.0);
+    auto b   = kelvin_pt(350.0);
+    auto cmp = a <=> b;
+    REQUIRE(cmp < 0);
     REQUIRE(a < b);
   }
 
   SECTION("three-way comparison - greater than") {
-    auto a = kelvin_pt(350.0);
-    auto b = kelvin_pt(300.0);
-    REQUIRE((a <=> b) > 0);
+    auto a   = kelvin_pt(350.0);
+    auto b   = kelvin_pt(300.0);
+    auto cmp = a <=> b;
+    REQUIRE(cmp > 0);
     REQUIRE(a > b);
   }
 }
@@ -897,7 +902,8 @@ TEST_CASE("Operations with different compatible references", "[quantity][compati
     auto km_val = 1.0_km;
     auto m_val  = 500.0_m;
     // 1 km > 500 m
-    REQUIRE((km_val <=> m_val) > 0);
+    auto cmp = km_val <=> m_val;
+    REQUIRE(cmp > 0);
     REQUIRE(km_val > m_val);
   }
 
